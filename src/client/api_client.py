@@ -15,6 +15,7 @@ from src.core.exceptions import (
     APIResponseError,
 )
 from src.core.file_tools import validate_jpg
+from src.model.route_info import RouteInfo
 from src.model.system_config import SystemConfig
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)  # 忽略SSL警告
@@ -86,21 +87,6 @@ class APIClient:
             params={"para": "undefined"},
         )
 
-    @api_wrapper("获取路线信息")
-    def get_route_info(self, route_name: str) -> dict[str, Any]:
-        """根据路线名获取路线信息"""
-        all_route_info = self._get_all_route_info()
-        if len(all_route_info) == 0:
-            raise ValueError("没有获取到可用路线")
-
-        if all_route_info.get(route_name) is None:
-            valid_routes = ", ".join(all_route_info.keys())
-            raise ValueError(
-                f"找不到名为'{route_name}'的路线. 可用路线: {valid_routes}"
-            )
-
-        return all_route_info.get(route_name, {})
-
     @api_wrapper("上传开始记录")
     def upload_start_record(self, record: dict[str, Any]) -> str:
         """上传开始记录并返回记录ID"""
@@ -120,6 +106,36 @@ class APIClient:
     def upload_finish_image(self, image_path: str) -> str:
         """上传运动结束图片并返回图片URL"""
         return self._upload_image(image_path, "uploadRecordImage2")
+
+    @api_wrapper("获取路线信息")
+    def get_all_route_info(self) -> dict[str, RouteInfo]:
+        """获取所有路线信息, 返回一个字典, 格式为 {路线名: 路线信息}"""
+        response = self._request(
+            url="/api/miniapp/exercise/listRule",
+            method="GET",
+            headers=self._headers | {"Content-Type": "application/json"},
+        )
+        data: list[dict] = response.json().get("data", [])
+        if len(data) == 0:
+            raise ValueError("没有获取到可用路线")
+
+        return {
+            plan["routeName"]: RouteInfo.model_validate(
+                {
+                    "route_name": plan["routeName"],
+                    "rule_id": rule["ruleId"],
+                    "plan_id": plan["planId"],
+                    "route_rule": rule["routeRule"],
+                    "max_time": plan["maxTime"],
+                    "min_time": plan["minTime"],
+                    "route_distance_km": plan["routeKilometre"],
+                    "rule_end_time": rule["ruleEndTime"],
+                    "rule_start_time": rule["ruleStartTime"],
+                }
+            )
+            for rule in data
+            for plan in rule["plans"]
+        }
 
     def _upload_record(self, record: dict[str, Any], api_name: str) -> dict[str, Any]:
         response = self._request(
@@ -141,31 +157,6 @@ class APIClient:
             )
 
         return response.json().get("data", "")
-
-    def _get_all_route_info(self) -> dict[str, dict[str, dict[str, Any]]]:
-        """获取所有路线信息, 返回一个字典, 格式为 {路线名: 路线信息}"""
-        response = self._request(
-            url="/api/miniapp/exercise/listRule",
-            method="GET",
-            headers=self._headers | {"Content-Type": "application/json"},
-        )
-        data: list[dict] = response.json().get("data", [])
-
-        return {
-            plan["routeName"]: {
-                "route_name": plan["routeName"],
-                "rule_id": rule["ruleId"],
-                "plan_id": plan["planId"],
-                "route_rule": rule["routeRule"],
-                "max_time": plan["maxTime"],
-                "min_time": plan["minTime"],
-                "route_distance_km": plan["routeKilometre"],
-                "rule_end_time": rule["ruleEndTime"],
-                "rule_start_time": rule["ruleStartTime"],
-            }
-            for rule in data
-            for plan in rule["plans"]
-        }
 
     def _request(self, url: str, method: str = "POST", **kwargs):
         full_url = f"{self._base_url}{url}"
