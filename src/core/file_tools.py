@@ -27,7 +27,7 @@ def read_json(file_path: str, encoding: str = "utf-8") -> str:
 
 def validate_jpg(file_path: str):
     validate_file_path(file_path)
-    if not file_path.endswith(".jpg") or file_path.endswith(".jpeg"):
+    if not (file_path.endswith(".jpg") or file_path.endswith(".jpeg")):
         raise ValueError(f"文件 '{file_path}' 不是一个有效的 JPG 文件")
 
 
