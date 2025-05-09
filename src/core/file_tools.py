@@ -1,7 +1,5 @@
-import json
 import logging
 import os
-from typing import BinaryIO
 
 import yaml
 

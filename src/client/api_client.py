@@ -162,7 +162,7 @@ class APIClient:
         full_url = f"{self._base_url}{url}"
         logger.debug(f"正在向 '{full_url}' 发送 {method} 请求")
 
-        time.sleep(random.uniform(1.5, 3.5))  # 添加随机延迟
+        time.sleep(random.uniform(1.5, 3.5))  # 添加随机延迟, 避免发送请求过快
         response = self._session.request(method, full_url, **kwargs)
 
         logger.debug(f"来自 '{full_url}' 的响应状态码为 {response.status_code}")
