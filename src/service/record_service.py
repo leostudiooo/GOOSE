@@ -45,31 +45,22 @@ class RecordService:
     def get_finish_record(
         self, start_image_url: str, finish_image_url: str, record_id: str
     ) -> dict[str, Any]:
-        return {
-            "routeName": self.route.route_name,
-            "ruleId": self.route.rule_id,
-            "planId": self.route.plan_id,
-            "recordTime": self.exercise.record_date,
-            "startTime": self.exercise.start_time,
-            "startImage": start_image_url,
+        record = self.get_start_record(start_image_url)
+        record_remaining = {
             "endTime": self.exercise.end_time,
             "exerciseTimes": self.exercise.duration_sec,
             "routeKilometre": self.exercise.distance_km,
             "endImage": finish_image_url,
             "strLatitudeLongitude": self.exercise.track_str,
-            "routeRule": self.route.route_rule,
-            "maxTime": self.route.max_time,
-            "minTime": self.route.min_time,
-            "orouteKilometre": self.route.route_distance_km,
-            "ruleEndTime": self.route.rule_end_time,
-            "ruleStartTime": self.route.rule_start_time,
             "calorie": self.exercise.calorie,
             "speed": self.exercise.pace,
             "dispTimeText": self.exercise.time_text,
-            "studentId": self.user.student_id,
             "id": record_id,
             "nowStatus": 2,
         }
+        record.update(record_remaining)
+
+        return record
 
     def upload(self) -> None:
         self.client.check_tenant()
