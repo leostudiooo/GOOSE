@@ -1,22 +1,16 @@
 import functools
 import json
 import logging
-import os
 import random
 import time
+from io import BytesIO
 from typing import Any, Callable
 
 import requests
 import urllib3
 
-from src.core.exceptions import (
-    APIClientError,
-    AppError,
-    APIResponseError,
-)
-from src.core.file_tools import validate_jpg
-from src.model.route_info import RouteInfo
-from src.model.system_config import SystemConfig
+from src.infrastructure.exceptions import APIClientError, APIResponseError, AppError
+from src.model.headers import Headers
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)  # 忽略SSL警告
 urllib3.disable_warnings(UserWarning)  # 忽略用户警告
@@ -42,18 +36,18 @@ def api_wrapper(desc: str):
 
 
 class APIClient:
-    def __init__(self, sys_config: SystemConfig, token: str):
+    def __init__(self, headers: Headers, token: str):
         self._base_url = f"https://tyxsjpt.seu.edu.cn"
         self._session = requests.Session()
         self._session.verify = False
 
-        self._tenant = sys_config.tenant
+        self._tenant = headers.tenant
         self._headers = {
             "token": f"Bearer {token}",
-            "miniappversion": sys_config.miniapp_version,
-            "User-Agent": sys_config.user_agent,
+            "miniappversion": headers.miniapp_version,
+            "User-Agent": headers.user_agent,
             "tenant": self._tenant,
-            "Referer": f"https://{sys_config.referer}",
+            "Referer": f"https://{headers.referer}",
             "xweb_xhr": "1",
             "Accept": "*/*",
             "Sec-Fetch-Site": "cross-site",
@@ -97,19 +91,38 @@ class APIClient:
         """上传结束记录并返回一个布尔值, 表示是否上传成功"""
         return self._upload_record(record, "saveRecord").get("data", False)
 
+    def _upload_record(self, record: dict[str, Any], api_name: str) -> dict[str, Any]:
+        response = self._request(
+            url=f"/api/exercise/exerciseRecord/{api_name}",
+            method="POST",
+            headers=self._headers | {"Content-Type": "application/json;charset=UTF-8"},
+            data=json.dumps(record, ensure_ascii=False),
+        )
+        return response.json()
+
     @api_wrapper("上传运动开始图片")
-    def upload_start_image(self, image_path: str) -> str:
+    def upload_start_image(self, image_buffer: BytesIO) -> str:
         """上传运动开始图片并返回图片URL"""
-        return self._upload_image(image_path, "uploadRecordImage")
+        return self._upload_image(image_buffer, "uploadRecordImage")
 
     @api_wrapper("上传运动结束图片")
-    def upload_finish_image(self, image_path: str) -> str:
+    def upload_finish_image(self, image_buffer: BytesIO) -> str:
         """上传运动结束图片并返回图片URL"""
-        return self._upload_image(image_path, "uploadRecordImage2")
+        return self._upload_image(image_buffer, "uploadRecordImage2")
+
+    def _upload_image(self, image_buffer: BytesIO, api_name: str) -> str:
+        response = self._request(
+            url=f"/api/miniapp/exercise/{api_name}",
+            method="POST",
+            headers=self._headers,
+            files={"file": ("1.jpg", image_buffer, "image/jpeg")},
+        )
+
+        return response.json().get("data", "")
 
     @api_wrapper("获取路线信息")
-    def get_all_route_info(self) -> dict[str, RouteInfo]:
-        """获取所有路线信息, 返回一个字典, 格式为 {路线名: 路线信息}"""
+    def get_all_route_info(self) -> dict[str, dict[str, Any]]:
+        """获取所有路线信息, 返回一个字典, 格式为 {路线名: {路线信息}}"""
         response = self._request(
             url="/api/miniapp/exercise/listRule",
             method="GET",
@@ -120,43 +133,20 @@ class APIClient:
             raise ValueError("没有获取到可用路线")
 
         return {
-            plan["routeName"]: RouteInfo.model_validate(
-                {
-                    "route_name": plan["routeName"],
-                    "rule_id": rule["ruleId"],
-                    "plan_id": plan["planId"],
-                    "route_rule": rule["routeRule"],
-                    "max_time": plan["maxTime"],
-                    "min_time": plan["minTime"],
-                    "route_distance_km": plan["routeKilometre"],
-                    "rule_end_time": rule["ruleEndTime"],
-                    "rule_start_time": rule["ruleStartTime"],
-                }
-            )
+            plan["routeName"]: {
+                "route_name": plan["routeName"],
+                "rule_id": rule["ruleId"],
+                "plan_id": plan["planId"],
+                "route_rule": rule["routeRule"],
+                "max_time": plan["maxTime"],
+                "min_time": plan["minTime"],
+                "route_distance_km": plan["routeKilometre"],
+                "rule_end_time": rule["ruleEndTime"],
+                "rule_start_time": rule["ruleStartTime"],
+            }
             for rule in data
             for plan in rule["plans"]
         }
-
-    def _upload_record(self, record: dict[str, Any], api_name: str) -> dict[str, Any]:
-        response = self._request(
-            url=f"/api/exercise/exerciseRecord/{api_name}",
-            method="POST",
-            headers=self._headers | {"Content-Type": "application/json;charset=UTF-8"},
-            data=json.dumps(record, ensure_ascii=False),
-        )
-        return response.json()
-
-    def _upload_image(self, image_path: str, api_name: str) -> str:
-        validate_jpg(image_path)
-        with open(image_path, "rb") as file:
-            response = self._request(
-                url=f"/api/miniapp/exercise/{api_name}",
-                method="POST",
-                headers=self._headers,
-                files={"file": (os.path.basename(image_path), file, "image/jpeg")},
-            )
-
-        return response.json().get("data", "")
 
     def _request(self, url: str, method: str = "POST", **kwargs):
         full_url = f"{self._base_url}{url}"

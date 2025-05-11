@@ -1,0 +1,90 @@
+from pathlib import Path
+from typing import Any
+
+from src.infrastructure.api_client import APIClient
+from src.infrastructure.file_handler import FileHandler
+from src.model.exercise import Exercise
+from src.model.route import Route
+from src.model.user import User
+
+
+class RecordService:
+    def __init__(
+        self, api_client: APIClient, exercise: Exercise, route: Route, user: User
+    ):
+        self.client = api_client
+        self.exercise = exercise
+        self.route = route
+        self.user = user
+
+    def get_start_record(self, start_image_url: str) -> dict[str, Any]:
+        return {
+            "routeName": self.route.route_name,
+            "ruleId": self.route.rule_id,
+            "planId": self.route.plan_id,
+            "recordTime": self.exercise.record_date,
+            "startTime": self.exercise.start_time,
+            "startImage": start_image_url,
+            "endTime": "",
+            "exerciseTimes": "",
+            "routeKilometre": "",
+            "endImage": "",
+            "strLatitudeLongitude": [],
+            "routeRule": self.route.route_rule,
+            "maxTime": self.route.max_time,
+            "minTime": self.route.min_time,
+            "orouteKilometre": self.route.route_distance_km,
+            "ruleEndTime": self.route.rule_end_time,
+            "ruleStartTime": self.route.rule_start_time,
+            "calorie": 0,
+            "speed": "0'00''",
+            "dispTimeText": 0,
+            "studentId": self.user.student_id,
+        }
+
+    def get_finish_record(
+        self, start_image_url: str, finish_image_url: str, record_id: str
+    ) -> dict[str, Any]:
+        return {
+            "routeName": self.route.route_name,
+            "ruleId": self.route.rule_id,
+            "planId": self.route.plan_id,
+            "recordTime": self.exercise.record_date,
+            "startTime": self.exercise.start_time,
+            "startImage": start_image_url,
+            "endTime": self.exercise.end_time,
+            "exerciseTimes": self.exercise.duration_sec,
+            "routeKilometre": self.exercise.distance_km,
+            "endImage": finish_image_url,
+            "strLatitudeLongitude": self.exercise.track_str,
+            "routeRule": self.route.route_rule,
+            "maxTime": self.route.max_time,
+            "minTime": self.route.min_time,
+            "orouteKilometre": self.route.route_distance_km,
+            "ruleEndTime": self.route.rule_end_time,
+            "ruleStartTime": self.route.rule_start_time,
+            "calorie": self.exercise.calorie,
+            "speed": self.exercise.pace,
+            "dispTimeText": self.exercise.time_text,
+            "studentId": self.user.student_id,
+            "id": record_id,
+            "nowStatus": 2,
+        }
+
+    def upload(self) -> None:
+        self.client.check_tenant()
+        self.client.check_token()
+
+        with FileHandler(Path(self.user.start_image), "rb", None) as f:
+            start_image_url = self.client.upload_start_image(f)
+
+        start_record = self.get_start_record(start_image_url)
+        record_id = self.client.upload_start_record(start_record)
+
+        with FileHandler(Path(self.user.finish_image), "rb", None) as f:
+            finish_image_url = self.client.upload_finish_image(f)
+
+        finish_record = self.get_finish_record(
+            start_image_url, finish_image_url, record_id
+        )
+        self.client.upload_finish_record(finish_record)
