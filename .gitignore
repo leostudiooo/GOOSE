@@ -175,3 +175,4 @@ cython_debug/
 
 .vscode/
 config/user.yaml
+/resources/tracks/

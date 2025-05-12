@@ -1,14 +1,11 @@
 import base64
-from datetime import datetime
 import json
+from datetime import datetime
 
 from pydantic import BaseModel, computed_field
 
-from src.core.exceptions import ConfigError
-from src.core.file_tools import read_yaml
 
-
-class UserConfig(BaseModel):
+class User(BaseModel):
     token: str
     date_time: datetime
     duration: int
@@ -16,14 +13,6 @@ class UserConfig(BaseModel):
     finish_image: str
     route: str
     custom_track: str
-
-    @classmethod
-    def from_yaml(cls, file_path: str) -> "UserConfig":
-        """从 YAML 文件读取用户配置"""
-        try:
-            return cls.model_validate(read_yaml(file_path))
-        except Exception as e:
-            raise ConfigError(file_path) from e
 
     @computed_field
     @property

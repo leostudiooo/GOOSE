@@ -1,18 +1,12 @@
 import json
-import logging
 import math
 
-from pydantic import BaseModel, computed_field
-
-from src.core.exceptions import TrackError
-from src.core.file_tools import read_json
-
-
-logger = logging.getLogger(__name__)
+from pydantic import BaseModel
 
 
 class TrackPoint(BaseModel):
-    """ 单个经纬度点 """
+    """单个经纬度点"""
+
     lat: float
     lng: float
     sortNum: int
@@ -20,13 +14,12 @@ class TrackPoint(BaseModel):
     class Config:
         extra = "forbid"  # 禁止传入多余字段
 
-    @staticmethod
-    def distance_km(p1: "TrackPoint", p2: "TrackPoint") -> float:
+    def distance_with(self, other: "TrackPoint") -> float:
         """使用Haversine公式计算地球上两经纬度点之间的球面距离(km)"""
-        rad_lat1 = math.radians(p1.lat)
-        rad_lat2 = math.radians(p2.lat)
+        rad_lat1 = math.radians(self.lat)
+        rad_lat2 = math.radians(other.lat)
         l1 = rad_lat1 - rad_lat2
-        l2 = math.radians(p1.lng) - math.radians(p2.lng)
+        l2 = math.radians(self.lng) - math.radians(other.lng)
         d = 2 * math.asin(
             math.sqrt(
                 math.pow(math.sin(l1 / 2), 2)
@@ -47,21 +40,12 @@ class Track(BaseModel):
     class Config:
         extra = "forbid"
 
-    @classmethod
-    def from_json(cls, file_path: str) -> "Track":
-        try:
-            return cls.model_validate_json(read_json(file_path))
-        except Exception as e:
-            raise TrackError(file_path) from e
-
-    @computed_field
-    @property
-    def distance_km(self) -> float:
+    def get_distance_km(self) -> float:
         distance = 0.0
         for p1, p2 in zip(self.track[:-1], self.track[1:]):
-            distance += TrackPoint.distance_km(p1, p2)
+            distance += p1.distance_with(p2)
 
         return distance
 
-    def dump_json(self) -> str:
+    def get_track_str(self) -> str:
         return json.dumps(self.model_dump()["track"])

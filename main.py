@@ -1,9 +1,10 @@
 import logging
+from pathlib import Path
 
 from rich.logging import RichHandler
 
-from src.core.exceptions import AppError
-from src.service.service import Service
+from src.infrastructure.exceptions import AppError
+from src.service.main_service import Service
 
 # 配置日志
 logging.basicConfig(
@@ -18,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     try:
-        service = Service()
-        service.do_upload()
+        service = Service(Path("config/"), Path("resources/route_info/"))
+        service.upload()
     except AppError as e:
         logger.exception(e.explain())
     except Exception as e:
