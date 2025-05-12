@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 from rich.logging import RichHandler
 
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     try:
-        service = Service()
+        service = Service(Path("config/"), Path("resources/route_info/"))
         service.upload()
     except AppError as e:
         logger.exception(e.explain())

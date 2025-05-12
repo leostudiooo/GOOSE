@@ -10,7 +10,6 @@ import requests
 import urllib3
 
 from src.infrastructure.exceptions import APIClientError, APIResponseError, AppError
-from src.model.headers import Headers
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)  # 忽略SSL警告
 urllib3.disable_warnings(UserWarning)  # 忽略用户警告
@@ -36,18 +35,18 @@ def api_wrapper(desc: str):
 
 
 class APIClient:
-    def __init__(self, headers: Headers, token: str):
+    def __init__(self, ua: str, app_ver: str, referer: str, tenant: str, token: str):
         self._base_url = f"https://tyxsjpt.seu.edu.cn"
         self._session = requests.Session()
         self._session.verify = False
 
-        self._tenant = headers.tenant
+        self._tenant = tenant
         self._headers = {
             "token": f"Bearer {token}",
-            "miniappversion": headers.miniapp_version,
-            "User-Agent": headers.user_agent,
+            "miniappversion": app_ver,
+            "User-Agent": ua,
             "tenant": self._tenant,
-            "Referer": f"https://{headers.referer}",
+            "Referer": referer,
             "xweb_xhr": "1",
             "Accept": "*/*",
             "Sec-Fetch-Site": "cross-site",

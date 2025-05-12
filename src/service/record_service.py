@@ -1,11 +1,8 @@
 from pathlib import Path
 from typing import Any
 
-from src.infrastructure.api_client import APIClient
-from src.infrastructure.file_handler import FileHandler
-from src.model.exercise import Exercise
-from src.model.route import Route
-from src.model.user import User
+from src.infrastructure import APIClient, FileHandler
+from src.model import Exercise, Route, User
 
 
 class RecordService:
