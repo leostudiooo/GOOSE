@@ -21,6 +21,17 @@ class AppError(Exception):
         return str(self) if cause == "" else f"{self}, 原因是{cause}"
 
 
+class RouteNotFoundError(AppError):
+    def __init__(self, route_name: str, valid_route_names: list[str]):
+        self.valid_route_names = valid_route_names
+        super().__init__(f"找不到名为 '{route_name}' 的路线")
+
+    def explain(self) -> str:
+        valid_route_names = [f"'{route_name}'" for route_name in self.valid_route_names]
+        valid_route_names = ", ".join(valid_route_names)
+        return f"{self}, 可用的路线包括 {valid_route_names}"
+
+
 class APIResponseError(AppError):
     explanations = {
         -6: "tenant可能有误或已经过期",

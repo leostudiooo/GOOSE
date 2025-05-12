@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     try:
-        service = Service(Path("config/"), Path("resources/route_info/"))
+        service = Service(Path("config/"))
         service.upload()
     except AppError as e:
         logger.exception(e.explain())

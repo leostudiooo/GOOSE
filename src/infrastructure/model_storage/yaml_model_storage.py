@@ -27,7 +27,7 @@ class YAMLModelStorage(ModelStorage, Generic[T]):
     def save(self, model: T) -> None:
         with FileHandler(self.path, "w") as f:
             try:
-                f.write(yaml.safe_dump(model.model_dump()))
+                f.write(yaml.safe_dump(model.model_dump(), allow_unicode=True))
             except Exception as e:
                 msg = f"保存文件 '{self.path}' 失败"
                 raise FileHandlerError(Path(self.path), msg) from e

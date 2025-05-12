@@ -7,7 +7,7 @@ from src.infrastructure import (
     JSONModelStorage,
     YAMLModelStorage,
 )
-from src.model import Exercise, Headers, Route, Track, User
+from src.model import Exercise, Headers, Route, Track, User, RouteGroup
 from src.service.record_service import RecordService
 
 logger = logging.getLogger(__name__)
@@ -16,10 +16,11 @@ logger = logging.getLogger(__name__)
 class Service:
     """此类包含了各种供 CLI 和 GUI 使用的业务方法"""
 
-    def __init__(self, config_dir: Path, route_info_dir: Path):
+    def __init__(self, config_dir: Path):
         sys_config_path = config_dir / "system.yaml"
         user_config_path = config_dir / "user.yaml"
-        self.route_info_dir = route_info_dir
+        route_info_path = config_dir / "route_info.yaml"
+        self.route_group_storage = YAMLModelStorage(route_info_path, RouteGroup)
         self.headers_storage = YAMLModelStorage(sys_config_path, Headers)
         self.user_storage = YAMLModelStorage(user_config_path, User)
 
@@ -47,10 +48,9 @@ class Service:
         """
         user = self.user_storage.load()
         headers = self.headers_storage.load()
+        route_group = self.route_group_storage.load()
 
-        route_file_path = self.route_info_dir / f"{user.route}.json"
-
-        JSONModelStorage(route_file_path, Route).load()
+        route_group.get_route(user.route)
         JSONModelStorage(Path(user.custom_track), Track).load()
 
         FileHandler(Path(user.start_image)).check_path()
@@ -66,10 +66,9 @@ class Service:
         """
         user = self.user_storage.load()
         headers = self.headers_storage.load()
+        route_group = self.route_group_storage.load()
 
-        route_file_path = self.route_info_dir / f"{user.route}.json"
-
-        route = JSONModelStorage(route_file_path, Route).load()
+        route = route_group.get_route(user.route)
         track = JSONModelStorage(Path(user.custom_track), Track).load()
 
         exercise = Exercise.get_from(user.date_time, user.duration, track)
