@@ -11,6 +11,9 @@ from src.infrastructure.model_storage.model_storage import ModelStorage, T
 
 
 class YAMLModelStorage(ModelStorage, Generic[T]):
+    def __init__(self, file_path: Path, model_class: type[T]):
+        super().__init__(file_path, model_class)
+
     def load(self) -> T:
         with FileHandler(self.path) as f:
             try:
