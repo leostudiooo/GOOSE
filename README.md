@@ -47,3 +47,7 @@ GOOSE 的全称是 "**G**OOSE **O**pens work**O**ut for **S**EU und**E**rgraduat
 GOOSE 的图标由 GOOSE 五个字母变形而来，绘制了一只张开翅膀的大鹅（虽然它看起来更像一只鸭子），配色灵感则来自于 SEU 的校徽。~~两个 O 组成的脚上色像药丸才不是 SEU 吃枣药丸的意思。~~
 
 如果你有更好的设计，欢迎提交 PR！我们会考虑将其纳入项目中。
+
+### 相关工具
+
+- [PRTS](https://github.com/leostudiooo/PRTS) 是用于编辑路径点的网页工具。可以直接访问 [prts.烫烫烫的锟斤拷.top](https://prts.烫烫烫的锟斤拷.top) 使用。
