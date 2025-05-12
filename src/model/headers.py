@@ -1,8 +1,8 @@
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel
 
 
 class Headers(BaseModel):
     user_agent: str
     miniapp_version: str
-    referer: HttpUrl
+    referer: str
     tenant: str

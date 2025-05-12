@@ -1,10 +1,7 @@
-import logging
 from pathlib import Path
 from typing import Optional
 
 from src.infrastructure.exceptions import FileHandlerError
-
-logger = logging.getLogger(__name__)
 
 
 class FileHandler:
