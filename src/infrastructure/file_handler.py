@@ -17,11 +17,11 @@ class FileHandler:
         self.file = None
 
     def check_path(self):
-        if not self.path.exists():
+        if "r" in self.mode and not self.path.exists():
             msg = f"找不到名为 '{self.path}' 的文件"
             raise FileHandlerError(self.path, msg)
 
-        if not self.path.is_file():
+        if self.path.exists() and not self.path.is_file():
             msg = f"路径 '{self.path}' 不是一个常规文件"
             raise FileHandlerError(self.path, msg)
 
