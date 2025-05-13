@@ -24,4 +24,4 @@ if __name__ == "__main__":
     except AppError as e:
         logger.error(e.explain())
     except Exception as e:
-        logger.error("出现未处理的异常")
+        logger.error(f"出现未处理的异常: {e}")

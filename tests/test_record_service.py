@@ -37,7 +37,7 @@ class TestRecordService(unittest.TestCase):
         finish_image="",
         route="",
         start_image="",
-        custom_track=CustomTrack(enable=False, file=""),
+        custom_track=CustomTrack(enable=False, file_path=""),
     )  # User在本测试中没有影响
     service = RecordService(None, exercise, route, user)
     start_record_expected = (
