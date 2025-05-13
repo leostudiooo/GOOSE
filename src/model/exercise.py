@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from pydantic import BaseModel
 
-from src.model.track import Track
+from src.model.track.track import Track
 
 
 class Exercise(BaseModel):
@@ -16,10 +16,9 @@ class Exercise(BaseModel):
     time_text: str
 
     @classmethod
-    def get_from(
-        cls, date_time: datetime, duration_sec: int, track: Track
-    ) -> "Exercise":
+    def get_from(cls, date_time: datetime, track: Track) -> "Exercise":
         distance_km = track.get_distance_km()
+        duration_sec = track.get_duration_sec()
         duration = timedelta(seconds=duration_sec)
         pace_sec = 0 if distance_km == 0 else int(round(duration_sec / distance_km))
         pace = f"{pace_sec // 60}'{pace_sec % 60}''"

@@ -1,4 +1,3 @@
-import json
 import math
 
 from pydantic import BaseModel
@@ -10,9 +9,6 @@ class TrackPoint(BaseModel):
     lat: float
     lng: float
     sortNum: int
-
-    class Config:
-        extra = "forbid"  # 禁止传入多余字段
 
     def distance_with(self, other: "TrackPoint") -> float:
         """使用Haversine公式计算地球上两经纬度点之间的球面距离(km)"""
@@ -30,22 +26,3 @@ class TrackPoint(BaseModel):
         )
         d *= 6378.13649  # 地球半径(km)
         return d
-
-
-class Track(BaseModel):
-    """轨迹数据的封装类"""
-
-    track: list[TrackPoint]
-
-    class Config:
-        extra = "forbid"
-
-    def get_distance_km(self) -> float:
-        distance = 0.0
-        for p1, p2 in zip(self.track[:-1], self.track[1:]):
-            distance += p1.distance_with(p2)
-
-        return distance
-
-    def get_track_str(self) -> str:
-        return json.dumps(self.model_dump()["track"])

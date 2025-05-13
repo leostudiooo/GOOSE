@@ -34,7 +34,6 @@ class TestRecordService(unittest.TestCase):
     user = User(
         token="a.eyJ1c2VyaWQiOiAiMTIzIn0.a",
         date_time=datetime.now(),
-        duration=0,
         finish_image="",
         route="",
         start_image="",

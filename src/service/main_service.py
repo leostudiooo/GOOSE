@@ -16,10 +16,11 @@ logger = logging.getLogger(__name__)
 class Service:
     """此类包含了各种供 CLI 和 GUI 使用的业务方法"""
 
-    def __init__(self, config_dir: Path):
+    def __init__(self, config_dir: Path, default_tracks_dir: Path):
         sys_config_path = config_dir / "system.yaml"
         user_config_path = config_dir / "user.yaml"
         route_info_path = config_dir / "route_info.yaml"
+        self.default_tracks_dir = default_tracks_dir
         self.route_group_storage = YAMLModelStorage(route_info_path, RouteGroup)
         self.headers_storage = YAMLModelStorage(sys_config_path, Headers)
         self.user_storage = YAMLModelStorage(user_config_path, User)
@@ -46,13 +47,7 @@ class Service:
 
         任一环节验证失败将会抛出 AppError 的子异常.
         """
-        user = self.user_storage.load()
-        headers = self.headers_storage.load()
-        route_group = self.route_group_storage.load()
-
-        route_group.get_route(user.route)
-        JSONModelStorage(Path(user.custom_track), Track).load()
-
+        user, headers, _, _ = self._make_models()
         FileHandler(Path(user.start_image)).check_path()
         FileHandler(Path(user.finish_image)).check_path()
 
@@ -64,14 +59,8 @@ class Service:
         """
         加载并验证各种模型, 执行上传操作. 上传出现错误时将抛出 AppError 的子异常
         """
-        user = self.user_storage.load()
-        headers = self.headers_storage.load()
-        route_group = self.route_group_storage.load()
-
-        route = route_group.get_route(user.route)
-        track = JSONModelStorage(Path(user.custom_track), Track).load()
-
-        exercise = Exercise.get_from(user.date_time, user.duration, track)
+        user, headers, route, track = self._make_models()
+        exercise = Exercise.get_from(user.date_time, track)
 
         client = self._make_client(user, headers)
         record_service = RecordService(client, exercise, route, user)
@@ -86,3 +75,19 @@ class Service:
             headers.tenant,
             user.token,
         )
+
+    def _make_models(self):
+        user = self.user_storage.load()
+        headers = self.headers_storage.load()
+        route_group = self.route_group_storage.load()
+
+        route = route_group.get_route(user.route)
+
+        if user.custom_track == "":
+            track_path = self.default_tracks_dir / f"{route.route_name}.json"
+            logger.warning(f"未定义轨迹文件, 将使用默认的轨迹文件 '{track_path}'")
+        else:
+            track_path = Path(user.custom_track)
+        track = JSONModelStorage(track_path, Track).load()
+
+        return user, headers, route, track

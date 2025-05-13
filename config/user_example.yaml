@@ -3,8 +3,7 @@ token: ey...Y
 
 # 用户偏好配置
 date_time: 2025-03-19 21:01:50
-duration: 665
 start_image: path/to/start/image.jpg
 finish_image: path/to/finish/image.jpg
 route: 梅园田径场
-custom_track: ""
+# custom_track: "track.json"

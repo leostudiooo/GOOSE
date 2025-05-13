@@ -19,9 +19,9 @@ logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     try:
-        service = Service(Path("config/"))
+        service = Service(Path("config/"), Path("resources/default_tracks/"))
         service.upload()
     except AppError as e:
-        logger.exception(e.explain())
+        logger.error(e.explain())
     except Exception as e:
-        logger.exception("出现未处理的异常")
+        logger.error("出现未处理的异常")

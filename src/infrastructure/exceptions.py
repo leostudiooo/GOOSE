@@ -59,7 +59,10 @@ class APIClientError(AppError):
 
 class ModelValidationError(AppError):
     def __init__(self, msg: str, error: ValidationError):
-        errors = [f"{error['loc']}: {error['msg']}" for error in error.errors()]
+        errors = [
+            f"{''.join(map(str, error['loc']))}: {error['msg']}"
+            for error in error.errors()
+        ]
         errors = "\n".join(errors)
         super().__init__(f"{msg}:\n{errors}")
 
