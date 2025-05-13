@@ -176,3 +176,6 @@ cython_debug/
 .vscode/
 config/user.yaml
 /resources/tracks/
+
+# macOS shit
+.DS_Store
