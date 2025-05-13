@@ -6,4 +6,6 @@ date_time: 2025-03-19 21:01:50
 start_image: path/to/start/image.jpg
 finish_image: path/to/finish/image.jpg
 route: 梅园田径场
+
+# 自定义轨迹，可从 PRTS 生成；注释掉则使用已选择场地的默认轨迹
 # custom_track: "track.json"
