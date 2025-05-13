@@ -80,14 +80,14 @@ class Service:
         user = self.user_storage.load()
         headers = self.headers_storage.load()
         route_group = self.route_group_storage.load()
-
+    
         route = route_group.get_route(user.route)
-
-        if user.custom_track == "":
+    
+        if user.custom_track_path == "":
             track_path = self.default_tracks_dir / f"{route.route_name}.json"
-            logger.warning(f"未定义轨迹文件, 将使用默认的轨迹文件 '{track_path}'")
+            logger.warning(f"未启用自定义轨迹, 将使用默认的轨迹文件 '{track_path}'")
         else:
-            track_path = Path(user.custom_track)
+            track_path = Path(user.custom_track_path)
         track = JSONModelStorage(track_path, Track).load()
-
+    
         return user, headers, route, track
