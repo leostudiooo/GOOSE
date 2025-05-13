@@ -17,7 +17,8 @@ class YAMLModelStorage(ModelStorage, Generic[T]):
     def load(self) -> T:
         with FileHandler(self.path) as f:
             try:
-                return self.model_class.model_validate(yaml.safe_load(f.read()))
+                data = yaml.safe_load(f.read())
+                return self.model_class.model_validate(data)
             except YAMLError as e:
                 msg = f"解析 YAML 文件 '{self.path}' 失败"
                 raise FileHandlerError(Path(self.path), msg) from e

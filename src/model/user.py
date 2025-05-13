@@ -1,9 +1,14 @@
 import base64
 import json
 from datetime import datetime
-from typing import Any
+from typing import Any, Union
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
+
+
+class CustomTrack(BaseModel):
+    enable: bool = False
+    file_path: str = ""
 
 
 class User(BaseModel):
@@ -12,7 +17,7 @@ class User(BaseModel):
     start_image: str
     finish_image: str
     route: str
-    custom_track: str = ""
+    custom_track: Union[str, CustomTrack] = Field(default_factory=lambda: CustomTrack())
 
     @classmethod
     @field_validator("token")
@@ -29,6 +34,16 @@ class User(BaseModel):
             raise ValueError("无效的token. 此token中没有userid字段")
         return v
 
+    @classmethod
+    @field_validator("custom_track", mode="before")
+    def validate_custom_track(cls, v: Any):
+        # 处理字符串类型的custom_track，转换为CustomTrack对象
+        if isinstance(v, str):
+            if v:
+                return CustomTrack(enable=True, file_path=v)
+            return CustomTrack()
+        return v
+
     @property
     def student_id(self) -> str:
         splits = self.token.split(".")
@@ -36,3 +51,11 @@ class User(BaseModel):
         user_id = json.loads(decoded_token)["userid"]
 
         return user_id
+
+    @property
+    def custom_track_path(self) -> str:
+        """获取自定义轨迹文件路径，如果未启用则返回空字符串"""
+        if isinstance(self.custom_track, str):
+            # 向下兼容旧配置
+            return self.custom_track
+        return self.custom_track.file_path if self.custom_track.enable else ""
