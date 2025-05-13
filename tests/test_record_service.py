@@ -4,7 +4,7 @@ import unittest
 
 from src.model.exercise import Exercise
 from src.model.route import Route
-from src.model.user import User
+from src.model.user import User, CustomTrack
 from src.service.record_service import RecordService
 
 
@@ -37,7 +37,7 @@ class TestRecordService(unittest.TestCase):
         finish_image="",
         route="",
         start_image="",
-        custom_track="",
+        custom_track=CustomTrack(enable=False, file=""),
     )  # User在本测试中没有影响
     service = RecordService(None, exercise, route, user)
     start_record_expected = (
