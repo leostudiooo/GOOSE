@@ -7,5 +7,7 @@ start_image: path/to/start/image.jpg
 finish_image: path/to/finish/image.jpg
 route: 梅园田径场
 
-# 自定义轨迹，可从 PRTS 生成；注释掉则使用已选择场地的默认轨迹
-# custom_track: "track.json"
+# 使用自定义轨迹，可从 PRTS 生成；禁用时使用路线默认轨迹
+custom_track: 
+  enable: false
+  file_path: "resources/my_tracks/track.json"
