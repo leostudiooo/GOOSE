@@ -18,22 +18,6 @@ class YAMLModelStorage(ModelStorage, Generic[T]):
         with FileHandler(self.path) as f:
             try:
                 data = yaml.safe_load(f.read())
-                
-                # 特殊处理 User 类的 custom_track 字段
-                if self.model_class.__name__ == "User" and isinstance(data.get("custom_track"), str):
-                    # 如果是非空字符串，转换为启用的对象格式
-                    if data["custom_track"]:
-                        data["custom_track"] = {
-                            "enable": True,
-                            "file": data["custom_track"]
-                        }
-                    # 如果是空字符串，转换为禁用的对象格式
-                    else:
-                        data["custom_track"] = {
-                            "enable": False,
-                            "file": ""
-                        }
-                    
                 return self.model_class.model_validate(data)
             except YAMLError as e:
                 msg = f"解析 YAML 文件 '{self.path}' 失败"

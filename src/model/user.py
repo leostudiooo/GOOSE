@@ -34,6 +34,16 @@ class User(BaseModel):
             raise ValueError("无效的token. 此token中没有userid字段")
         return v
 
+    @classmethod
+    @field_validator("custom_track", mode="before")
+    def validate_custom_track(cls, v: Any):
+        # 处理字符串类型的custom_track，转换为CustomTrack对象
+        if isinstance(v, str):
+            if v:
+                return CustomTrack(enable=True, file_path=v)
+            return CustomTrack()
+        return v
+
     @property
     def student_id(self) -> str:
         splits = self.token.split(".")
@@ -48,4 +58,4 @@ class User(BaseModel):
         if isinstance(self.custom_track, str):
             # 向下兼容旧配置
             return self.custom_track
-        return self.custom_track.file if self.custom_track.enable else ""
+        return self.custom_track.file_path if self.custom_track.enable else ""
