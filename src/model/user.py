@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field, field_validator
 
 class CustomTrack(BaseModel):
     enable: bool = False
-    file: str = ""
+    file_path: str = ""
 
 
 class User(BaseModel):
