@@ -1,10 +1,10 @@
 # 用户登录信息
-token: ey...Y
+token: valid.eyJ1c2VyaWQiOiAiMTIzIn0.token
 
 # 用户偏好配置
 date_time: 2025-03-19 21:01:50
-start_image: path/to/start/image.jpg
-finish_image: path/to/finish/image.jpg
+start_image: "path/to/start/image.jpg"
+finish_image: "path/to/finish/image.jpg"
 route: 梅园田径场
 
 # 使用自定义轨迹，可从 PRTS 生成；禁用时使用路线默认轨迹
