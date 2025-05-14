@@ -24,7 +24,7 @@ class AboutScreen(ModalScreen):
             self.latest_version = latest_version
             self.error = error
             super().__init__()
-    
+
     def compose(self) -> ComposeResult:
         with Container(id="about-dialog"):
             yield Label("关于 GOOSE 🪿", id="about-title")
@@ -38,7 +38,10 @@ class AboutScreen(ModalScreen):
                 )
             
             yield Label("", id="update-info")
-            yield LoadingIndicator(id="update-loader", display=False)
+            # 修复点：移除 display 参数，改为使用 visible 属性
+            loading_indicator = LoadingIndicator(id="update-loader")
+            loading_indicator.visible = False
+            yield loading_indicator
             
             with Container(id="about-buttons"):
                 yield Button("检查更新", id="check-update", variant="primary")
@@ -62,7 +65,7 @@ class AboutScreen(ModalScreen):
         
         # 显示加载指示器
         loader = self.query_one("#update-loader")
-        loader.display = True
+        loader.visible = True
         
         # 在后台运行检查更新的任务
         asyncio.create_task(self._check_updates_task())
@@ -102,7 +105,7 @@ class AboutScreen(ModalScreen):
         """处理更新检查完成的消息"""
         # 隐藏加载指示器
         loader = self.query_one("#update-loader")
-        loader.display = False
+        loader.visible = False
         
         # 更新状态信息
         update_info = self.query_one("#update-info")
