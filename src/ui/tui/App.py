@@ -7,6 +7,7 @@ from ...service.main_service import Service
 
 from .UserConfigPanel import UserConfigPanel
 from .ActionPanel import ActionPanel
+from .LogViewer import LogViewer
 
 
 class GOOSEApp(App):
@@ -18,6 +19,7 @@ class GOOSEApp(App):
         Binding("s", "save", "保存配置"),
         Binding("v", "validate", "验证配置"),
         Binding("u", "upload", "上传记录"),
+        Binding("l", "toggle_logs", "显示日志"),
     ]
     
     # 添加 CSS 样式
@@ -87,11 +89,24 @@ class GOOSEApp(App):
         margin: 1;
         width: 100%;
     }
+    
+    #log_viewer {
+        width: 100%;
+        height: 100%;
+        background: $surface;
+        display: none;
+    }
+    
+    #log_viewer.visible {
+        display: block;
+        layer: overlay;
+    }
     """
     
     def __init__(self):
         super().__init__()
         self.service = Service(Path("config/"), Path("resources/default_tracks/"))
+        self.log_viewer = None
     
     def compose(self):
         """创建应用布局"""
@@ -99,6 +114,7 @@ class GOOSEApp(App):
         yield UserConfigPanel()
         yield ActionPanel()
         yield Footer()
+        yield LogViewer()
     
     def action_save(self) -> None:
         """保存当前配置"""
@@ -114,6 +130,11 @@ class GOOSEApp(App):
     def action_upload(self) -> None:
         """上传记录"""
         self.query_one(ActionPanel).upload_record()
+    
+    def action_toggle_logs(self) -> None:
+        """切换日志查看器的显示状态"""
+        log_viewer = self.query_one(LogViewer)
+        log_viewer.toggle()
     
     # 删除或简化为直接返回用户配置面板
     def get_active_panel(self):
