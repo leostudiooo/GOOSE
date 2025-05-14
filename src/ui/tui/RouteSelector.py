@@ -54,9 +54,3 @@ class RouteSelector(Vertical):
                 self.app.notify(f"加载路线列表失败: {e}", severity="error")
             else:
                 print(f"加载路线列表失败: {e}")
-    
-    def get_route_info(self, route_name):
-        """获取特定路线的信息"""
-        if route_name in self._routes:
-            return self._routes[route_name]
-        return None
