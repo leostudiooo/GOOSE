@@ -1,14 +1,18 @@
 from textual.widgets import Button
 from textual.containers import Horizontal
-
 from textual.app import ComposeResult
 
 class ActionPanel(Horizontal):
     """操作按钮面板"""
     
+    def __init__(self):
+        super().__init__(id="action_panel")
+    
     def compose(self) -> ComposeResult:
+        # 添加退出按钮，并设置所有按钮的样式
         yield Button("验证配置", id="validate", variant="primary")
         yield Button("上传记录", id="upload", variant="success")
+        yield Button("退出程序", id="quit", variant="error")
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """处理按钮点击事件"""
@@ -16,6 +20,9 @@ class ActionPanel(Horizontal):
             self.validate_config()
         elif event.button.id == "upload":
             self.upload_record()
+        elif event.button.id == "quit":
+            # 退出应用
+            self.app.exit()
     
     def validate_config(self) -> None:
         """验证配置"""
