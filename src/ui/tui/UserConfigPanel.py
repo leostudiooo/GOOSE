@@ -49,7 +49,10 @@ class UserConfigPanel(VerticalScroll):
             
             # 填充表单
             self.query_one("#token").value = user.token
-            self.query_one("#date_time").value = str(user.date_time)
+
+            date_time_input = self.query_one(DateTimeInput)
+            date_time_input.set_value(user.date_time)
+            
             self.query_one("#start_image").value = user.start_image
             self.query_one("#finish_image").value = user.finish_image
             self.query_one("#route").value = user.route
@@ -57,6 +60,12 @@ class UserConfigPanel(VerticalScroll):
             # 使用自定义轨迹组件的set_config方法设置值
             custom_track = self.query_one("#custom_track", CustomTrack)
             custom_track.set_config(user.custom_track.enable, user.custom_track.file_path)
+
+            logging.info("用户配置已加载")
+            if hasattr(self.app, 'notify'):
+                self.app.notify("用户配置已加载", severity="information")
+            else:
+                print("用户配置已加载")
             
         except Exception as e:
             logging.error(f"加载用户配置失败: {e}")
