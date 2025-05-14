@@ -8,7 +8,7 @@ from src.infrastructure import (
     JSONModelStorage,
     YAMLModelStorage,
 )
-from src.model import Exercise, Headers, Route, Track, User, RouteGroup
+from src.model import Exercise, Headers, Track, User, RouteGroup
 from src.service.record_service import RecordService
 
 logger = logging.getLogger(__name__)
@@ -48,6 +48,11 @@ class Service:
     def save_user(self, user: User):
         """保存用户信息到用户配置文件"""
         self.user_storage.save(user)
+
+    def get_route_names(self) -> list[str]:
+        """获取所有路线组中路线名称列表"""
+        route_group = self.route_group_storage.load()
+        return route_group.get_route_names()
 
     def validate(self):
         """

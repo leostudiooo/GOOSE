@@ -17,10 +17,10 @@ class User(BaseModel):
     start_image: str
     finish_image: str
     route: str
-    custom_track: Union[str, CustomTrack] = Field(default_factory=lambda: CustomTrack())
+    custom_track: Union[str, CustomTrack] = Field(default_factory=CustomTrack)
 
-    @classmethod
     @field_validator("token")
+    @classmethod
     def validate_token(cls, v: Any):
         splits = v.split(".")
         if len(splits) != 3:
@@ -34,8 +34,8 @@ class User(BaseModel):
             raise ValueError("无效的token. 此token中没有userid字段")
         return v
 
-    @classmethod
     @field_validator("custom_track", mode="before")
+    @classmethod
     def validate_custom_track(cls, v: Any):
         # 处理字符串类型的custom_track，转换为CustomTrack对象
         if isinstance(v, str):
