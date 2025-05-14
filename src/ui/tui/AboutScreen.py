@@ -8,7 +8,7 @@ from textual.widgets import Button, Label, Static, LoadingIndicator
 from textual.message import Message
 
 # 当前应用版本
-CURRENT_VERSION = "0.1.0"
+CURRENT_VERSION = "0.1.1"
 
 class AboutScreen(ModalScreen):
     """关于GOOSE的信息屏幕"""
