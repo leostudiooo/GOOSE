@@ -3,6 +3,7 @@ from textual.containers import VerticalScroll
 
 from textual.app import ComposeResult
 from .DateTimeInput import DateTimeInput
+from .RouteSelector import RouteSelector
 
 class UserConfigPanel(VerticalScroll):
     """用户配置编辑面板"""
@@ -18,7 +19,10 @@ class UserConfigPanel(VerticalScroll):
         yield DateTimeInput(id_prefix="date_time")
         yield Input(id="start_image", placeholder="开始图片路径")
         yield Input(id="finish_image", placeholder="结束图片路径")
-        yield Input(id="route", placeholder="路线名称")
+        
+        # 使用路线选择器组件
+        yield Label("路线选择")
+        yield RouteSelector(id="route")
         
         # 自定义轨迹配置
         yield Label("自定义轨迹")
@@ -71,6 +75,6 @@ class UserConfigPanel(VerticalScroll):
         except Exception as e:
             self.app.notify(f"保存配置失败: {e}", severity="error")
 
-def save_config(self) -> None:
-    """保存配置（与save_user_config相同，用于兼容App的调用）"""
-    self.save_user_config()
+    def save_config(self) -> None:
+        """保存配置（与save_user_config相同，用于兼容App的调用）"""
+        self.save_user_config()
