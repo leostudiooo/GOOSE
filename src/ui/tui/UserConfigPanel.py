@@ -64,13 +64,9 @@ class UserConfigPanel(VerticalScroll):
             logging.info("用户配置已加载")
             if hasattr(self.app, 'notify'):
                 self.app.notify("用户配置已加载", severity="information")
-            else:
-                print("用户配置已加载")
             
         except Exception as e:
             logging.error(f"加载用户配置失败: {e}")
-            if not hasattr(self.app, 'notify'):
-                print(f"加载配置失败: {e}")
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """保存用户配置"""
@@ -99,13 +95,9 @@ class UserConfigPanel(VerticalScroll):
             logging.info("用户配置已保存")
             if hasattr(self.app, 'notify'):
                 self.app.notify("用户配置已保存", severity="information")
-            else:
-                print("用户配置已保存")
                 
         except Exception as e:
             logging.error(f"保存用户配置失败: {e}")
-            if not hasattr(self.app, 'notify'):
-                print(f"保存配置失败: {e}")
 
     def save_config(self) -> None:
         """保存配置（与save_user_config相同，用于兼容App的调用）"""
