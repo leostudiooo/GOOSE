@@ -106,15 +106,18 @@ class GOOSEApp(App):
         display: block;
         layer: overlay;
     }
-
+    
     /* 关于对话框样式 */
     #about-dialog {
-        width: 60;
         height: auto;
+        max-height: 100%;
         border: thick $primary;
         background: $surface;
         padding: 1 2;
-        margin: 1 2;
+        margin: 4 4;
+        layout: vertical;
+        align: center middle;
+        overflow: auto;
     }
     
     #about-title {
@@ -130,7 +133,6 @@ class GOOSEApp(App):
     #about-content {
         margin: 1 0;
         height: auto;
-        min-height: 10;
     }
     
     #update-info {
@@ -146,12 +148,15 @@ class GOOSEApp(App):
     
     #update-loader {
         margin: 1 0;
+        align: center middle;
+        height: 1;
     }
     
     #about-buttons {
         width: 100%;
         align-horizontal: center;
         margin-top: 1;
+        height: 3;
     }
     
     #check-update {

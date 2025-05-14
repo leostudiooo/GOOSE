@@ -15,6 +15,7 @@ class AboutScreen(ModalScreen):
 
     BINDINGS = [
         ("escape", "dismiss", "关闭"),
+        ("a", "dismiss", "关闭"),
     ]
 
     class UpdateCheckComplete(Message):
