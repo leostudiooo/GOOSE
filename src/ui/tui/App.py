@@ -5,7 +5,6 @@ from textual.widgets import Header, Footer
 
 from ...service.main_service import Service
 
-from .ConfigSelector import ConfigSelector
 from .UserConfigPanel import UserConfigPanel
 from .ActionPanel import ActionPanel
 
@@ -28,7 +27,6 @@ class GOOSEApp(App):
     def compose(self):
         """创建应用布局"""
         yield Header()
-        yield ConfigSelector()
         yield UserConfigPanel()
         yield ActionPanel()
         yield Footer()
