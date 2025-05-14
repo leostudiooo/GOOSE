@@ -20,6 +20,27 @@ class GOOSEApp(App):
         Binding("u", "upload", "上传记录"),
     ]
     
+    # 添加 CSS 样式
+    CSS = """
+    #action_panel {
+        dock: bottom;
+        height: auto;
+        margin: 1 0;
+        padding: 1;
+        content-align: center middle;
+        background: $surface;
+    }
+    
+    Button {
+        margin: 0 1;
+        min-width: 15;
+    }
+    
+    UserConfigPanel {
+        height: 1fr;
+    }
+    """
+    
     def __init__(self):
         super().__init__()
         self.service = Service(Path("config/"), Path("resources/default_tracks/"))
@@ -33,9 +54,10 @@ class GOOSEApp(App):
     
     def action_save(self) -> None:
         """保存当前配置"""
-        active_panel = self.get_active_panel()
-        if active_panel:
-            active_panel.save_config()
+        panel = self.query_one(UserConfigPanel)
+        if panel:
+            # 直接调用用户面板的方法
+            panel.save_user_config()
     
     def action_validate(self) -> None:
         """验证配置"""
@@ -45,16 +67,10 @@ class GOOSEApp(App):
         """上传记录"""
         self.query_one(ActionPanel).upload_record()
     
+    # 删除或简化为直接返回用户配置面板
     def get_active_panel(self):
         """获取当前活动的配置面板"""
-        for panel in [UserConfigPanel]:
-            try:
-                panel_instance = self.query_one(f"#{panel.__name__.lower()}")
-                if panel_instance.display:
-                    return panel_instance
-            except:
-                pass
-        return None
+        return self.query_one(UserConfigPanel)
 
 if __name__ == "__main__":
     app = GOOSEApp()
