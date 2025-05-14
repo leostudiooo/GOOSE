@@ -34,7 +34,7 @@ class User(BaseModel):
             raise ValueError("无效的token. 此token中没有userid字段")
         return v
 
-    @field_validator("custom_track")
+    @field_validator("custom_track", mode="before")
     @classmethod
     def validate_custom_track(cls, v: Any):
         # 处理字符串类型的custom_track，转换为CustomTrack对象
