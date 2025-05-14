@@ -3,6 +3,8 @@ from textual.containers import Container, ScrollableContainer
 from textual.widgets import Button, Label, Static
 from textual.reactive import reactive
 
+from .LogManager import LogStore
+
 class LogViewer(Container):
     """日志查看器组件"""
     
@@ -52,7 +54,7 @@ class LogViewer(Container):
     
     is_visible = reactive(False)
     
-    def __init__(self, log_store, id="log_viewer"):
+    def __init__(self, log_store: LogStore, id="log_viewer"):
         super().__init__(id=id)
         self.log_store = log_store
         

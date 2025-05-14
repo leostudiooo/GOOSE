@@ -50,9 +50,7 @@ class RouteSelector(Vertical):
         except Exception as e:
             logging.error(f"加载路线列表失败: {e}")
             # 错误处理
-            if hasattr(self.app, 'notify'):
-                self.app.notify(f"加载路线列表失败: {e}", severity="error")
-            else:
+            if not hasattr(self.app, 'notify'):
                 print(f"加载路线列表失败: {e}")
     
     @property

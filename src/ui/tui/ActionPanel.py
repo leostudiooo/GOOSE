@@ -34,7 +34,6 @@ class ActionPanel(Horizontal):
             self.app.notify("配置验证通过！", severity="information")
         except Exception as e:
             logging.error(f"配置验证失败: {e}")
-            self.app.notify(f"配置验证失败: {e}", severity="error")
     
     def upload_record(self) -> None:
         """上传记录"""
@@ -46,4 +45,3 @@ class ActionPanel(Horizontal):
             self.app.notify("记录上传成功！", severity="success")
         except Exception as e:
             logging.error(f"上传记录失败: {e}")
-            self.app.notify(f"上传记录失败: {e}", severity="error")

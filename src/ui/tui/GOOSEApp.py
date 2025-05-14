@@ -1,6 +1,5 @@
 from pathlib import Path
 import logging
-from collections import deque
 
 from textual.app import App
 from textual.binding import Binding
@@ -11,31 +10,8 @@ from ...service.main_service import Service
 from .UserConfigPanel import UserConfigPanel
 from .ActionPanel import ActionPanel
 from .LogViewer import LogViewer
-
-# 创建全局日志存储
-class LogStore:
-    def __init__(self, max_entries=1000):
-        self.logs = deque(maxlen=max_entries)
-        
-    def add_log(self, message):
-        self.logs.append(message)
-        
-    def get_logs(self):
-        return list(self.logs)
-
-# 创建全局日志处理器
-class TUILogHandler(logging.Handler):
-    def __init__(self, log_store):
-        super().__init__()
-        self.log_store = log_store
-        self.formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
-    
-    def emit(self, record):
-        log_entry = self.formatter.format(record)
-        self.log_store.add_log(log_entry)
-
-# 全局日志存储实例
-log_store = LogStore()
+from .NotificationManager import NotificationManager
+from .LogManager import LogStore, setup_logging
 
 class GOOSEApp(App):
     """GOOSE 配置管理与上传应用"""
@@ -131,36 +107,24 @@ class GOOSEApp(App):
     """
     
     def __init__(self):
-        # 设置日志
-        self.setup_logging()
+        # 创建通知管理器
+        self.notification_mgr = NotificationManager()
+        
+        # 设置日志和通知系统
+        self.log_store = setup_logging(notification_handler=self.notification_mgr)
         
         super().__init__()
+        
+        # 初始化业务服务
         self.service = Service(Path("config/"), Path("resources/default_tracks/"))
+        
+        # 设置通知管理器的app引用
+        self.notification_mgr.set_app(self)
         
         # 添加一些初始日志
         logging.info("GOOSE 应用已启动")
         logging.info(f"配置目录: {Path('config/').absolute()}")
         logging.info(f"默认轨迹目录: {Path('resources/default_tracks/').absolute()}")
-    
-    def setup_logging(self):
-        """设置应用日志系统"""
-        # 配置根日志记录器
-        root_logger = logging.getLogger()
-        root_logger.setLevel(logging.INFO)
-        
-        # 清除已有的处理器
-        for handler in root_logger.handlers[:]:
-            # Remove all existing handlers to take over completely
-            root_logger.handlers.clear()
-        
-        # 添加自定义处理器
-        handler = TUILogHandler(log_store)
-        root_logger.addHandler(handler)
-        
-        # 也可以添加一个控制台处理器以便在开发时查看日志
-        console_handler = logging.StreamHandler()
-        console_handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(message)s'))
-        root_logger.addHandler(console_handler)
     
     def compose(self):
         """创建应用布局"""
@@ -168,7 +132,7 @@ class GOOSEApp(App):
         yield UserConfigPanel()
         yield ActionPanel()
         yield Footer()
-        yield LogViewer(log_store)
+        yield LogViewer(self.log_store)
     
     def action_save(self) -> None:
         """保存当前配置"""
@@ -193,7 +157,6 @@ class GOOSEApp(App):
         log_viewer = self.query_one(LogViewer)
         log_viewer.toggle()
     
-    # 删除或简化为直接返回用户配置面板
     def get_active_panel(self):
         """获取当前活动的配置面板"""
         return self.query_one(UserConfigPanel)
