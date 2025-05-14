@@ -2,6 +2,7 @@ from textual.widgets import Input, Label, Button, Switch
 from textual.containers import VerticalScroll
 
 from textual.app import ComposeResult
+from .DateTimeInput import DateTimeInput
 
 class UserConfigPanel(VerticalScroll):
     """用户配置编辑面板"""
@@ -14,7 +15,7 @@ class UserConfigPanel(VerticalScroll):
         """创建用户配置编辑表单"""
         yield Label("用户配置", classes="panel-title")
         yield Input(id="token", placeholder="Token")
-        yield Input(id="date_time", placeholder="日期时间 (YYYY-MM-DD HH:MM:SS)")
+        yield DateTimeInput(id_prefix="date_time")
         yield Input(id="start_image", placeholder="开始图片路径")
         yield Input(id="finish_image", placeholder="结束图片路径")
         yield Input(id="route", placeholder="路线名称")
