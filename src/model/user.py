@@ -17,7 +17,7 @@ class User(BaseModel):
     start_image: str
     finish_image: str
     route: str
-    custom_track: Union[str, CustomTrack] = ""
+    custom_track: Union[str, CustomTrack] = Field(default_factory=CustomTrack)
 
     @field_validator("token")
     @classmethod
