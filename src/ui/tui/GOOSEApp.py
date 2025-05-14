@@ -12,6 +12,7 @@ from .ActionPanel import ActionPanel
 from .LogViewer import LogViewer
 from .NotificationManager import NotificationManager
 from .LogManager import LogStore, setup_logging
+from .AboutScreen import AboutScreen
 
 class GOOSEApp(App):
     """GOOSE 配置管理与上传应用"""
@@ -23,6 +24,7 @@ class GOOSEApp(App):
         Binding("v", "validate", "验证配置"),
         Binding("u", "upload", "上传记录"),
         Binding("l", "toggle_logs", "显示日志"),
+        Binding("a", "show_about", "关于"),
     ]
     
     # 添加 CSS 样式
@@ -104,6 +106,61 @@ class GOOSEApp(App):
         display: block;
         layer: overlay;
     }
+
+    /* 关于对话框样式 */
+    #about-dialog {
+        width: 60;
+        height: auto;
+        border: thick $primary;
+        background: $surface;
+        padding: 1 2;
+        margin: 1 2;
+    }
+    
+    #about-title {
+        text-align: center;
+        text-style: bold;
+        color: $accent;
+        width: 100%;
+        margin-bottom: 1;
+        padding-bottom: 1;
+        border-bottom: solid $primary;
+    }
+    
+    #about-content {
+        margin: 1 0;
+        height: auto;
+        min-height: 10;
+    }
+    
+    #update-info {
+        text-align: center;
+        margin: 1 0;
+        height: 1;
+    }
+    
+    #update-info.update-available {
+        color: $success;
+        text-style: bold;
+    }
+    
+    #update-loader {
+        margin: 1 0;
+    }
+    
+    #about-buttons {
+        width: 100%;
+        align-horizontal: center;
+        margin-top: 1;
+    }
+    
+    #check-update {
+        margin-right: 1;
+    }
+    
+    #close-about {
+        margin-left: 1;
+    }
     """
     
     def __init__(self):
@@ -156,6 +213,10 @@ class GOOSEApp(App):
         """切换日志查看器的显示状态"""
         log_viewer = self.query_one(LogViewer)
         log_viewer.toggle()
+    
+    def action_show_about(self) -> None:
+        """显示关于页面"""
+        self.push_screen(AboutScreen())
     
     def get_active_panel(self):
         """获取当前活动的配置面板"""
