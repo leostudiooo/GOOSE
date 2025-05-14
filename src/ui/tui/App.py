@@ -3,7 +3,7 @@ from textual.app import App
 from textual.binding import Binding
 from textual.widgets import Header, Footer
 
-from src.service.main_service import Service
+from ...service.main_service import Service
 
 from .ConfigSelector import ConfigSelector
 from .UserConfigPanel import UserConfigPanel
