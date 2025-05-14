@@ -27,6 +27,7 @@ class LogViewer(Container):
         color: $text;
         text-style: bold;
         content-align: center middle;
+        padding: 1 1;
     }
     
     #close_button {
@@ -93,7 +94,7 @@ class LogViewer(Container):
         log_content.update(log_text if log_text else "暂无日志记录")
         
         # 自动滚动到最新日志
-        log_container.scroll_end(animate=False)
+        log_container.scroll_end(animate=True)
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """处理按钮点击事件"""
