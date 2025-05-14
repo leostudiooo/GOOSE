@@ -54,3 +54,30 @@ class RouteSelector(Vertical):
                 self.app.notify(f"加载路线列表失败: {e}", severity="error")
             else:
                 print(f"加载路线列表失败: {e}")
+    
+    @property
+    def value(self):
+        """获取当前选择的路线"""
+        select = self.query_one(Select)
+        return select.value if select.value is not None else ""
+    
+    @value.setter
+    def value(self, route_name: str) -> None:
+        """设置当前选择的路线
+        
+        Args:
+            route_name: 路线名称
+        """
+        if not route_name:
+            return
+            
+        select = self.query_one(Select)
+        # 如果路线列表还未加载，先加载路线
+        if not self._routes:
+            self.load_routes()
+            
+        # 检查路线是否存在于选项中
+        if route_name in self._routes:
+            select.value = route_name
+        else:
+            logging.warning(f"路线 '{route_name}' 不存在于可用路线列表中")
