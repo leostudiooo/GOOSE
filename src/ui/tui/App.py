@@ -67,7 +67,6 @@ class GOOSEApp(App):
     .date-time-input {
         width: 100%;
         height: 3;
-        margin-bottom: 1;
     }
     
     .date-input {
