@@ -84,7 +84,8 @@ class UserConfigPanel(VerticalScroll):
         try:
             user = self._user
             user.token = self.query_one("#token").value
-            user.date_time = self.query_one("#date_time").value
+            date_time_input = self.query_one(DateTimeInput)
+            user.date_time = date_time_input.get_value()
             user.start_image = self.query_one("#start_image").value
             user.finish_image = self.query_one("#finish_image").value
             user.route = self.query_one("#route").value
