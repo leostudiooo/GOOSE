@@ -1,30 +1,49 @@
-from textual.widgets import Select
-from textual import on
+from textual.widgets import Select, Label
+from textual.app import ComposeResult
+from textual.containers import Vertical
 from pathlib import Path
 
 # 直接引入Service类
 from src.service.main_service import Service
 
-class RouteSelector(Select):
-    """路线选择组件"""
+class RouteSelector(Vertical):
+    """路线选择组件容器"""
+
+    DEFAULT_CSS = """
+    RouteSelector {
+        margin: 1;
+        height: auto;
+    }
     
-    def __init__(self, id="route"):
-        super().__init__(id=id, options=[])
+    RouteSelector Label {
+        width: auto;
+        margin: 1 0;
+        text-style: bold;
+    }
+    """
+    
+    def __init__(self, id="route_container"):
+        super().__init__(id=id)
         self._routes = []
         # 直接创建Service实例，不依赖app
         self._service = Service(Path("config/"), Path("resources/default_tracks/"))
+
+    def compose(self) -> ComposeResult:
+        """创建组件"""
+        yield Label("选择路线", id="route_label")
+        yield Select(id="route_select", options=[])
     
-    def on_mount(self) -> None:
+    def on_mount(self):
         """组件挂载时加载路线选项"""
         self.load_routes()
     
-    def load_routes(self) -> None:
+    def load_routes(self):
         """从服务加载可用的路线列表"""
         try:
             route_names = self._service.route_group_storage.load().get_route_names()
             self._routes = route_names
             route_options = [(name, name) for name in route_names]
-            self.set_options(route_options)
+            self.query_one(Select).set_options(route_options)
             
         except Exception as e:
             # 错误处理

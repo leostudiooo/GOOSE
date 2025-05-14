@@ -4,6 +4,10 @@ from textual.containers import VerticalScroll
 from textual.app import ComposeResult
 from .DateTimeInput import DateTimeInput
 from .RouteSelector import RouteSelector
+from .CustomTrack import CustomTrack
+
+from pathlib import Path
+from src.service.main_service import Service
 
 class UserConfigPanel(VerticalScroll):
     """用户配置编辑面板"""
@@ -11,6 +15,8 @@ class UserConfigPanel(VerticalScroll):
     def __init__(self):
         super().__init__(id="user_config")
         self._user = None
+        # 直接创建Service实例，不依赖app
+        self._service = Service(Path("config/"), Path("resources/default_tracks/"))
     
     def compose(self) -> ComposeResult:
         """创建用户配置编辑表单"""
@@ -21,13 +27,10 @@ class UserConfigPanel(VerticalScroll):
         yield Input(id="finish_image", placeholder="结束图片路径")
         
         # 使用路线选择器组件
-        yield Label("路线选择")
         yield RouteSelector(id="route")
         
-        # 自定义轨迹配置
-        yield Label("自定义轨迹")
-        yield Switch(id="custom_track_enable")
-        yield Input(id="custom_track_path", placeholder="自定义轨迹文件路径")
+        # 使用自定义轨迹组件
+        yield CustomTrack(id="custom_track")
         
         yield Button("保存", id="save_user_config")
     
@@ -38,8 +41,8 @@ class UserConfigPanel(VerticalScroll):
     def load_user_config(self) -> None:
         """从配置文件加载用户配置"""
         try:
-            service = self.app.service
-            user = service.get_user()
+            # 使用本地service实例
+            user = self._service.get_user()
             self._user = user
             
             # 填充表单
@@ -48,10 +51,16 @@ class UserConfigPanel(VerticalScroll):
             self.query_one("#start_image").value = user.start_image
             self.query_one("#finish_image").value = user.finish_image
             self.query_one("#route").value = user.route
-            self.query_one("#custom_track_enable").value = user.custom_track.enable
-            self.query_one("#custom_track_path").value = user.custom_track.file_path
+            
+            # 使用自定义轨迹组件的set_config方法设置值
+            custom_track = self.query_one("#custom_track", CustomTrack)
+            custom_track.set_config(user.custom_track.enable, user.custom_track.file_path)
+            
         except Exception as e:
-            self.app.notify(f"加载配置失败: {e}", severity="error")
+            if hasattr(self.app, 'notify'):
+                self.app.notify(f"加载配置失败: {e}", severity="error")
+            else:
+                print(f"加载配置失败: {e}")
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """保存用户配置"""
@@ -67,13 +76,25 @@ class UserConfigPanel(VerticalScroll):
             user.start_image = self.query_one("#start_image").value
             user.finish_image = self.query_one("#finish_image").value
             user.route = self.query_one("#route").value
-            user.custom_track.enable = self.query_one("#custom_track_enable").value
-            user.custom_track.file_path = self.query_one("#custom_track_path").value
             
-            self.app.service.save_user(user)
-            self.app.notify("用户配置已保存", severity="information")
+            # 从自定义轨迹组件获取配置
+            custom_track_config = self.query_one("#custom_track").get_config()
+            user.custom_track.enable = custom_track_config["enable"]
+            user.custom_track.file_path = custom_track_config["file_path"]
+            
+            # 使用本地service保存
+            self._service.save_user(user)
+            
+            if hasattr(self.app, 'notify'):
+                self.app.notify("用户配置已保存", severity="information")
+            else:
+                print("用户配置已保存")
+                
         except Exception as e:
-            self.app.notify(f"保存配置失败: {e}", severity="error")
+            if hasattr(self.app, 'notify'):
+                self.app.notify(f"保存配置失败: {e}", severity="error")
+            else:
+                print(f"保存配置失败: {e}")
 
     def save_config(self) -> None:
         """保存配置（与save_user_config相同，用于兼容App的调用）"""

@@ -12,7 +12,7 @@ from .ActionPanel import ActionPanel
 class GOOSEApp(App):
     """GOOSE 配置管理与上传应用"""
     
-    TITLE = "GOOSE - 东南大学课外锻炼助手"
+    TITLE = "GOOSE 🪿"
     BINDINGS = [
         Binding("q", "quit", "退出"),
         Binding("s", "save", "保存配置"),
@@ -38,7 +38,7 @@ class GOOSEApp(App):
     
     UserConfigPanel {
         height: 1fr;
-        padding: 1 2;
+        padding: 1 1;
     }
     
     .panel-title {
@@ -83,20 +83,8 @@ class GOOSEApp(App):
         width: auto;
     }
     
-    .switch-row {
-        height: 3;
-        align: left middle;
-        margin-top: 1;
-        margin-bottom: 1;
-    }
-    
-    .switch-label {
-        width: auto;
-        padding-right: 1;
-    }
-    
     .save-button {
-        margin-top: 2;
+        margin: 1;
         width: 100%;
     }
     """
