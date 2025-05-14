@@ -1,4 +1,5 @@
 import logging
+import shutil
 from pathlib import Path
 
 from src.infrastructure import (
@@ -19,10 +20,17 @@ class Service:
     def __init__(self, config_dir: Path, default_tracks_dir: Path):
         sys_config_path = config_dir / "system.yaml"
         user_config_path = config_dir / "user.yaml"
+        user_example_path = config_dir / "user_example.yaml"
         route_info_path = config_dir / "route_info.yaml"
         self.default_tracks_dir = default_tracks_dir
         self.route_group_storage = YAMLModelStorage(route_info_path, RouteGroup)
         self.headers_storage = YAMLModelStorage(sys_config_path, Headers)
+
+        # 如果用户配置文件不存在，复制示例配置
+        if not user_config_path.exists() and user_example_path.exists():
+            logger.info(f"用户配置文件不存在，从 {user_example_path} 复制示例配置")
+            shutil.copy(user_example_path, user_config_path)
+            
         self.user_storage = YAMLModelStorage(user_config_path, User)
 
     def get_headers(self) -> Headers:
