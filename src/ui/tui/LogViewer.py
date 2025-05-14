@@ -1,28 +1,7 @@
-import logging
-import time
-from collections import deque
-from pathlib import Path
-
 from textual.app import ComposeResult
 from textual.containers import Container, ScrollableContainer
-from textual.widgets import Button, Label, Static, Header
+from textual.widgets import Button, Label, Static
 from textual.reactive import reactive
-
-class LogHandler(logging.Handler):
-    """自定义日志处理器，用于存储最近的日志记录"""
-
-    def __init__(self, max_entries=1000):
-        super().__init__()
-        self.logs = deque(maxlen=max_entries)
-        self.formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
-    
-    def emit(self, record):
-        log_entry = self.formatter.format(record)
-        self.logs.append(log_entry)
-
-# 创建全局日志处理器实例
-log_handler = LogHandler()
-logging.getLogger().addHandler(log_handler)
 
 class LogViewer(Container):
     """日志查看器组件"""
@@ -73,8 +52,9 @@ class LogViewer(Container):
     
     is_visible = reactive(False)
     
-    def __init__(self, id="log_viewer"):
+    def __init__(self, log_store, id="log_viewer"):
         super().__init__(id=id)
+        self.log_store = log_store
         
     def compose(self) -> ComposeResult:
         """创建日志查看器的布局"""
@@ -106,11 +86,12 @@ class LogViewer(Container):
         log_container = self.query_one("#log_container")
         
         # 合并所有日志条目并显示
-        log_text = "\n".join(log_handler.logs)
+        logs = self.log_store.get_logs()
+        log_text = "\n".join(logs)
         log_content.update(log_text if log_text else "暂无日志记录")
         
         # 自动滚动到最新日志
-        log_container.scroll_end()
+        log_container.scroll_end(animate=False)
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """处理按钮点击事件"""

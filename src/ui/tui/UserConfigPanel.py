@@ -9,6 +9,8 @@ from .CustomTrack import CustomTrack
 from pathlib import Path
 from src.service.main_service import Service
 
+import logging
+
 class UserConfigPanel(VerticalScroll):
     """用户配置编辑面板"""
     
@@ -57,6 +59,7 @@ class UserConfigPanel(VerticalScroll):
             custom_track.set_config(user.custom_track.enable, user.custom_track.file_path)
             
         except Exception as e:
+            logging.error(f"加载用户配置失败: {e}")
             if hasattr(self.app, 'notify'):
                 self.app.notify(f"加载配置失败: {e}", severity="error")
             else:
@@ -85,12 +88,14 @@ class UserConfigPanel(VerticalScroll):
             # 使用本地service保存
             self._service.save_user(user)
             
+            logging.info("用户配置已保存")
             if hasattr(self.app, 'notify'):
                 self.app.notify("用户配置已保存", severity="information")
             else:
                 print("用户配置已保存")
                 
         except Exception as e:
+            logging.error(f"保存用户配置失败: {e}")
             if hasattr(self.app, 'notify'):
                 self.app.notify(f"保存配置失败: {e}", severity="error")
             else:
