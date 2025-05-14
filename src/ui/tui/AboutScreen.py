@@ -39,7 +39,6 @@ class AboutScreen(ModalScreen):
                 )
             
             yield Label("", id="update-info")
-            # 修复点：移除 display 参数，改为使用 visible 属性
             loading_indicator = LoadingIndicator(id="update-loader")
             loading_indicator.visible = False
             yield loading_indicator
