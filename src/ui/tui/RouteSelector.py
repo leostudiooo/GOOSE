@@ -3,6 +3,8 @@ from textual.app import ComposeResult
 from textual.containers import Vertical
 from pathlib import Path
 
+import logging
+
 # 直接引入Service类
 from src.service.main_service import Service
 
@@ -46,6 +48,7 @@ class RouteSelector(Vertical):
             self.query_one(Select).set_options(route_options)
             
         except Exception as e:
+            logging.error(f"加载路线列表失败: {e}")
             # 错误处理
             if hasattr(self.app, 'notify'):
                 self.app.notify(f"加载路线列表失败: {e}", severity="error")
