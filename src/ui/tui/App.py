@@ -106,7 +106,6 @@ class GOOSEApp(App):
     def __init__(self):
         super().__init__()
         self.service = Service(Path("config/"), Path("resources/default_tracks/"))
-        self.log_viewer = None
     
     def compose(self):
         """创建应用布局"""
