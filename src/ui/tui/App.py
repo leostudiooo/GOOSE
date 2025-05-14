@@ -150,9 +150,8 @@ class GOOSEApp(App):
         
         # 清除已有的处理器
         for handler in root_logger.handlers[:]:
-            # Remove only handlers of a specific type or added by this application
-            if isinstance(handler, (TUILogHandler, logging.StreamHandler)):
-                root_logger.removeHandler(handler)
+            # Remove all existing handlers to take over completely
+            root_logger.handlers.clear()
         
         # 添加自定义处理器
         handler = TUILogHandler(log_store)
