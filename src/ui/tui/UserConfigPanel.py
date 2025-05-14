@@ -69,3 +69,7 @@ class UserConfigPanel(VerticalScroll):
             self.app.notify("用户配置已保存", severity="information")
         except Exception as e:
             self.app.notify(f"保存配置失败: {e}", severity="error")
+
+def save_config(self) -> None:
+    """保存配置（与save_user_config相同，用于兼容App的调用）"""
+    self.save_user_config()
