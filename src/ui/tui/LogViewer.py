@@ -103,10 +103,14 @@ class LogViewer(Container):
     def refresh_logs(self) -> None:
         """刷新日志内容"""
         log_content = self.query_one("#log_content")
+        log_container = self.query_one("#log_container")
         
         # 合并所有日志条目并显示
         log_text = "\n".join(log_handler.logs)
         log_content.update(log_text if log_text else "暂无日志记录")
+        
+        # 自动滚动到最新日志
+        log_container.scroll_end()
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """处理按钮点击事件"""
