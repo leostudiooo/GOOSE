@@ -38,6 +38,67 @@ class GOOSEApp(App):
     
     UserConfigPanel {
         height: 1fr;
+        padding: 1 2;
+    }
+    
+    .panel-title {
+        text-align: center;
+        text-style: bold;
+        width: 100%;
+        color: $accent;
+        margin-bottom: 1;
+    }
+    
+    .section-title {
+        text-style: bold;
+        color: $text-muted;
+        margin-top: 1;
+        margin-bottom: 1;
+        border-bottom: solid $primary;
+        padding-bottom: 1;
+    }
+    
+    .field-label {
+        margin-top: 1;
+        margin-bottom: 1;
+        color: $text;
+    }
+    
+    .date-time-input {
+        width: 100%;
+        height: 3;
+        margin-bottom: 1;
+    }
+    
+    .date-input {
+        width: 1fr;
+        margin-right: 1;
+    }
+    
+    .time-input {
+        width: 1fr;
+        margin-right: 1;
+    }
+    
+    .now-button {
+        width: auto;
+    }
+    
+    .switch-row {
+        height: 3;
+        align: left middle;
+        margin-top: 1;
+        margin-bottom: 1;
+    }
+    
+    .switch-label {
+        width: auto;
+        padding-right: 1;
+    }
+    
+    .save-button {
+        margin-top: 2;
+        width: 100%;
     }
     """
     
