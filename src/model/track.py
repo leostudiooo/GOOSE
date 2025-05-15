@@ -1,6 +1,18 @@
+import json
 import math
+from datetime import datetime
 
 from pydantic import BaseModel
+
+
+class TrackMetadata(BaseModel):
+    totalDistance: float
+    formattedDistance: str
+    totalTime: int
+    formattedTime: str
+    sampleTimeInterval: int
+    pointCount: int
+    createdAt: datetime
 
 
 class TrackPoint(BaseModel):
@@ -26,3 +38,23 @@ class TrackPoint(BaseModel):
         )
         d *= 6378.13649  # 地球半径(km)
         return d
+
+
+class Track(BaseModel):
+    """轨迹数据的封装类"""
+
+    track: list[TrackPoint]
+    metadata: TrackMetadata
+
+    def get_distance_km(self) -> float:
+        distance = 0.0
+        for p1, p2 in zip(self.track[:-1], self.track[1:]):
+            distance += p1.distance_with(p2)
+
+        return distance
+
+    def get_track_str(self) -> str:
+        return json.dumps(self.model_dump()["track"])
+
+    def get_duration_sec(self) -> int:
+        return self.metadata.totalTime

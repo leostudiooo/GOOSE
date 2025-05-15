@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from pydantic import BaseModel
 
-from src.model.track.track import Track
+from src.model.track import Track
 
 
 class Exercise(BaseModel):
