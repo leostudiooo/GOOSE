@@ -8,7 +8,7 @@ from textual.widgets import Button, Label, Static, LoadingIndicator
 from textual.message import Message
 
 # 当前应用版本
-CURRENT_VERSION = "0.1.1"
+CURRENT_VERSION = "0.1.2"
 
 class AboutScreen(ModalScreen):
     """关于GOOSE的信息屏幕"""
@@ -35,7 +35,13 @@ class AboutScreen(ModalScreen):
                     f"GOOSE - Opens workOut for SEU undErgraduates v{CURRENT_VERSION}\n\n"
                     "本软件不作任何品质担保。这是自由软件；您可以在遵循 GNU 通用公共许可证的条款下重新分发和/或修改它。详见 <https://www.gnu.org/licenses/>。\n\n"
                     "(C) 2025 GOOSE 贡献者们\n"
-                    "项目地址: https://github.com/leostudiooo/GOOSE"
+                    "项目地址: https://github.com/leostudiooo/GOOSE\n\n"
+                    """
+本项目仅用于学习和研究目的。我们（所有贡献者）不对使用本项目的任何后果负责。请遵守相关法律法规，合理使用本项目。
+
+软件不对用户上传数据的真实性、准确性、完整性和合法性负责。用户应对其上传的数据承担全部责任，确保其符合实际情况。严禁将此程序用于任何形式的违纪、舞弊或其他不当行为。
+
+使用本项目即表示你同意上述条款。若不同意，请立即将本项目从你的计算机中删除。"""
                 )
             
             yield Label("", id="update-info")
