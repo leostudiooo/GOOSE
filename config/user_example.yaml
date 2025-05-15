@@ -1,5 +1,5 @@
 # 用户登录信息
-token: valid.eyJ1c2VyaWQiOiAiMTIzIn0.token
+token: "your.eyJ1c2VyaWQiOiAiMTIzIn0.token_here"
 
 # 用户偏好配置
 date_time: 2025-03-19 21:01:50
