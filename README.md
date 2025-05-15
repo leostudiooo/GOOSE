@@ -18,6 +18,8 @@ GOOSE 是一个开源 Python 项目，旨在帮助 SEU 的本科生更好地进�
 
 GOOSE 是自由软件，遵循 [GPLv3 许可证](LICENSE)。你可以自由地使用、修改和分发它。我们鼓励用户参与到项目中来，提出建议和贡献代码。
 
+<img width="682" alt="TUI 运行截图" src="https://github.com/user-attachments/assets/c7075b42-a695-478d-b804-3a813d273958" />
+
 > 💡 **自由软件意味着**
 >
 > - 免费：你可以免费使用它，无需向任何人支付任何费用。
