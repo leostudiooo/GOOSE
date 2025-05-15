@@ -12,7 +12,7 @@
 
 </div>
 
-## 🪿 关于项目
+## 🪿 关于
 
 GOOSE 是一个开源 Python 项目，旨在帮助 SEU 的本科生更好地进行课外锻炼。它提供了一个简单易用的界面，允许用户记录和跟踪他们的锻炼进度。GOOSE 通过将数据直接上传到服务器，避免了需要使用官方小程序进行打卡上传的麻烦。只需在本地运行 GOOSE，进行一些简单的配置，就可以轻松地将锻炼数据上传到服务器。
 
@@ -53,3 +53,144 @@ GOOSE 的图标由 GOOSE 五个字母变形而来，绘制了一只张开翅膀�
 ### 相关工具
 
 - [PRTS](https://github.com/leostudiooo/PRTS) 是用于编辑路径点的网页工具。可以直接访问 [prts.烫烫烫的锟斤拷.top](https://prts.烫烫烫的锟斤拷.top) 使用。
+
+## 🌲 结构
+
+```
+.
+├── LICENSE
+├── README.md
+├── requirements.txt
+├── GOOSE.py
+├── config/
+├── img/
+├── resources/
+│   ├── boundaries/
+│   └── default_tracks/
+├── src/
+│   ├── infrastructure/
+│   │   └── model_storage/
+│   ├── model/
+│   │   └── track/
+│   ├── service/
+│   └── ui/
+│       ├── cli/
+│       └── tui/
+└── tests/
+```
+
+- `config`：配置文件目录，包含系统配置、用户配置和路线信息。
+- `img`：图片资源目录。
+- `resources`：资源目录，包含默认轨迹和边界文件（可用于在 [PRTS](https://github.com/leostudiooo/PRTS) 中使用）。
+- `src`：源代码目录，包含基础设施、模型、服务和用户界面模块。
+- `tests`：测试目录。
+- `requirements.txt`：Python 依赖文件，包含项目所需的所有 Python 库。
+- `GOOSE.py`：主程序文件，运行该文件即可启动 GOOSE。
+
+## 💻 使用
+
+### 运行环境
+
+- Python 3.9+（未在更低版本上测试）和 pip
+- Windows/macOS（未在 Linux 上测试，但理论上可以运行）
+
+### 安装和运行
+
+1. 将仓库 clone 到本地
+
+   ```sh
+   git clone https://github.com/leostudiooo/GOOSE.git
+   ```
+
+   或者你偏好的其他任何方式。然后进入目录：
+
+   ```sh
+   cd GOOSE
+   ```
+
+2. 安装依赖（推荐使用虚拟环境）
+
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+3. 运行
+
+   ```sh
+   python GOOSE.py
+   ```
+
+   或者如果你在 macOS/Linux 上也可以先
+
+   ```sh
+   chmod +x GOOSE.py
+   ```
+   然后直接运行
+
+   ```sh
+   ./GOOSE.py
+   ```
+
+   就可以进入 TUI 使用了。
+
+### 配置
+
+运行后会自动创建 `config/user.yaml` 文件，你也可以直接在 TUI 中进行配置。
+
+```yaml
+# 用户登录信息
+token: valid.eyJ1c2VyaWQiOiAiMTIzIn0.token
+
+# 用户偏好配置
+date_time: 2025-03-19 21:01:50
+start_image: "path/to/start/image.jpg"
+finish_image: "path/to/finish/image.jpg"
+route: 梅园田径场
+
+# 使用自定义轨迹，可从 PRTS 生成；禁用时使用路线默认轨迹
+custom_track: 
+  enable: false
+  file_path: "resources/my_tracks/track.json"
+```
+
+- `token`：需要在小程序中获取。为防止滥用，请自行寻找获取方法。
+- `date_time`：锻炼时间，格式为 `YYYY-MM-DD HH:MM:SS`，创建时为示例时间，可在 TUI 中使用“现在”按钮获取当前时间。
+- `start_image`：开始锻炼时的图片路径。
+- `finish_image`：结束锻炼时的图片路径。
+- `route`：锻炼的路线名称，默认为“梅园田径场”，可在 TUI 中选择，`config/route_info.yaml` 中有所有可选路线。
+- `custom_track`：自定义轨迹，禁用时使用路线默认轨迹。`enable` 为 `true` 时，`file_path` 为自定义轨迹文件路径，格式为 JSON，使用 [PRTS](https://github.com/leostudiooo/PRTS) 生成。`enable` 为 `false` 时，使用默认轨迹。
+
+系统配置和路线信息在 `config/system.yaml` 和 `config/route_info.yaml` 中，普通用户无需修改。系统配置包括服务器地址、请求头等信息，路线信息包括所有可选路线的名称和默认轨迹文件路径。
+
+## 🛠️ 贡献
+
+我们欢迎任何形式的贡献，包括但不限于：
+- 提交 [议题](https://github.com/leostudiooo/GOOSE/issues)
+  - Bug 报告
+  - 功能请求
+  - 使用建议
+- 创建 [拉取请求](https://github.com/leostudiooo/GOOSE/pulls)
+  - Bug 修复
+  - 功能实现
+  - 文档更新
+
+期待你的参与！
+
+## 📜 声明
+
+本项目遵循 [GPLv3 许可](LICENSE)。这主要意味着以下几点：
+- 你可以自由使用、修改和分发本项目的代码。
+- 你可以在任何地方使用本项目的代码，但如果你修改了代码并分发了修改后的版本，你必须在同样的许可下分发，也就是说你必须在 GPLv3 下开源你的修改。
+
+除 GPLv3 的规定之外，我 (@leostudiooo) 还要求使用者遵守以下几点：
+- 禁止使用本项目获取任何形式的商业利益，包括但不限于：
+  - 使用本项目提供收费的服务；
+  - 将本项目的代码或修改后的代码作为商业产品出售；
+  - 等等。
+- 禁止使用本项目的代码或修改后的代码进行任何形式的恶意或违法活动。
+
+**本项目仅用于学习和研究目的。我们（包括我和所有贡献者）不对使用本项目的任何后果负责。请遵守相关法律法规，合理使用本项目。**
+
+**软件不对用户上传数据的真实性、准确性、完整性和合法性负责。用户应对其上传的数据承担全部责任，确保其符合实际情况。严禁将此程序用于任何形式的违纪、舞弊或其他不当行为。**
+
+**使用本项目即表示你同意上述条款。若不同意，请将本项目从你的计算机中删除。**
