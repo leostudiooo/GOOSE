@@ -42,7 +42,7 @@ class RouteSelector(Vertical):
     def load_routes(self):
         """从服务加载可用的路线列表"""
         try:
-            route_names = self._service.route_group_storage.load().get_route_names()
+            route_names = self._service._route_group_storage.load().get_route_names()
             self._routes = route_names
             route_options = [(name, name) for name in route_names]
             self.query_one(Select).set_options(route_options)
