@@ -120,6 +120,12 @@ GOOSE 的图标由 GOOSE 五个字母变形而来，绘制了一只张开翅膀�
    pip install -r requirements.txt
    ```
 
+   推荐使用 [uv](https://github.com/astral-sh/uv) 作为包管理器：
+
+   ```sh
+    uv venv .venv --python=3.9 && source .venv/bin/activate && uv sync
+    ```
+
 3. 运行
 
    ```sh
