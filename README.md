@@ -8,6 +8,7 @@
 
 ![GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)
 ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)
+[![Tests](https://github.com/leostudiooo/GOOSE/actions/workflows/python-test.yml/badge.svg)](https://github.com/leostudiooo/GOOSE/actions/workflows/python-test.yml)
 ![GitHub Stars](https://img.shields.io/github/stars/leostudiooo/GOOSE.svg?style=social)
 
 </div>
