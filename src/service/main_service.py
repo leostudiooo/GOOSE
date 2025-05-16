@@ -8,7 +8,7 @@ from src.infrastructure import (
     JSONModelStorage,
     YAMLModelStorage,
 )
-from src.model import Exercise, Headers, Track, User, RouteGroup
+from src.model import Headers, Track, User, RouteGroup
 from src.service.record_service import RecordService
 
 logger = logging.getLogger(__name__)
@@ -75,10 +75,8 @@ class Service:
         加载并验证各种模型, 执行上传操作. 上传出现错误时将抛出 AppError 的子异常
         """
         user, headers, route, track = self._make_models()
-        exercise = Exercise.get_from(user.date_time, track)
-
         client = self._make_client(user, headers)
-        record_service = RecordService(client, exercise, route, user)
+        record_service = RecordService(client, track, route, user)
         record_service.upload()
 
     @staticmethod
