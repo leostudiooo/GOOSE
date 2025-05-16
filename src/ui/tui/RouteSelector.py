@@ -28,7 +28,7 @@ class RouteSelector(Vertical):
         super().__init__(id=id)
         self._routes = []
         # 直接创建Service实例，不依赖app
-        self._service = Service(Path("config/"), Path("resources/default_tracks/"))
+        self._service = Service()
 
     def compose(self) -> ComposeResult:
         """创建组件"""
