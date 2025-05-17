@@ -61,6 +61,7 @@ class Service:
         任一环节验证失败将会抛出 AppError 的子异常.
         """
         user, headers, _, _ = self._make_models()
+        
         FileHandler(Path(user.start_image)).check_path()
         FileHandler(Path(user.finish_image)).check_path()
 
@@ -103,4 +104,6 @@ class Service:
             track_path = Path(user.custom_track_path)
         track = JSONModelStorage(track_path, Track).load()
     
+        user.validate_token()
+        
         return user, headers, route, track

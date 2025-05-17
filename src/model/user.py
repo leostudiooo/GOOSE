@@ -5,6 +5,8 @@ from typing import Any, Union
 
 from pydantic import BaseModel, Field, field_validator
 
+from src.infrastructure.exceptions import InvalidTokenError
+
 
 class CustomTrack(BaseModel):
     enable: bool = False
@@ -19,21 +21,6 @@ class User(BaseModel):
     route: str
     custom_track: Union[str, CustomTrack] = Field(default_factory=CustomTrack)
 
-    @field_validator("token")
-    @classmethod
-    def validate_token(cls, v: Any):
-        splits = v.split(".")
-        if len(splits) != 3:
-            raise ValueError("无效的token. token 必须包含三个部分，如 'part1.part2.part3'")
-        try:
-            decoded_token = base64.b64decode(splits[1] + "==")
-            params = json.loads(decoded_token)
-        except Exception as e:
-            raise ValueError("无效的token. 此token无法被解码") from e
-        if "userid" not in params:
-            raise ValueError("无效的token. 此token中没有userid字段")
-        return v
-
     @field_validator("custom_track", mode="before")
     @classmethod
     def validate_custom_track(cls, v: Any):
@@ -44,8 +31,22 @@ class User(BaseModel):
             return CustomTrack()
         return v
 
+    def validate_token(self) -> None:
+        splits = self.token.split(".")
+        if len(splits) != 3:
+            msg = f"token 必须包含三个部分, 形如 'part1.part2.part3'"
+            raise InvalidTokenError(self.token, msg)
+        try:
+            decoded_token = base64.b64decode(splits[1] + "==")
+            params = json.loads(decoded_token)
+        except Exception as e:
+            raise InvalidTokenError(self.token, "此token无法被解码") from e
+        if "userid" not in params:
+            raise InvalidTokenError(self.token, "此token中没有userid字段")
+
     @property
     def student_id(self) -> str:
+        self.validate_token()
         splits = self.token.split(".")
         decoded_token = base64.b64decode(splits[1] + "==")
         user_id = json.loads(decoded_token)["userid"]
