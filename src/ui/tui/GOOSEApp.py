@@ -1,7 +1,10 @@
 from pathlib import Path
+import platform
+import os
+import subprocess
 import logging
 
-from textual.app import App
+from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.widgets import Header, Footer
 
@@ -174,6 +177,9 @@ class GOOSEApp(App):
         
         # 设置日志和通知系统
         self.log_store = setup_logging(notification_handler=self.notification_mgr)
+
+        # 自动检测操作系统并设置主题
+        self.detect_and_set_theme()
         
         super().__init__()
         
@@ -187,6 +193,36 @@ class GOOSEApp(App):
         logging.info("GOOSE 应用已启动")
         logging.info(f"配置目录: {Path('config/').absolute()}")
         logging.info(f"默认轨迹目录: {Path('resources/default_tracks/').absolute()}")
+
+    def detect_and_set_theme(self):
+        """检测系统深色模式并设置主题"""
+        system = platform.system()
+        is_dark_mode = False
+        
+        try:
+            if system == "Darwin":  # macOS
+                # 使用 defaults 命令检测深色模式
+                result = subprocess.run(
+                    ["defaults", "read", "-g", "AppleInterfaceStyle"],
+                    capture_output=True,
+                    text=True
+                )
+                if "Dark" in result.stdout:
+                    is_dark_mode = True
+            elif system == "Windows":   # Windows 10+
+                import winreg
+                key = winreg.OpenKey(
+                    winreg.HKEY_CURRENT_USER,
+                    r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+                )
+                value, _ = winreg.QueryValueEx(key, "AppsUseLightTheme")
+                is_dark_mode = (value == 0)
+            # Linux: TODO
+        except Exception as e:
+            logging.info(f"无法检测系统深色模式: {e}，将默认使用浅色主题。")
+
+        # 设置主题
+        self.action_toggle_class(self, "textual-dark" if is_dark_mode else "textual-light")
     
     def compose(self):
         """创建应用布局"""
