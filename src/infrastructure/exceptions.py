@@ -74,3 +74,13 @@ class FileHandlerError(AppError):
     def __init__(self, file_path: Path, msg: str = ""):
         msg = f"打开文件 '{file_path}' 时出现异常" if msg == "" else msg
         super().__init__(msg)
+
+
+class InvalidTokenError(AppError):
+    def __init__(self, token: str, msg: str = ""):
+        self.token = token
+        super().__init__(f"无效的token. {msg}")
+
+    def explain(self) -> str:
+        cause = self._get_cause()
+        return str(self) if cause == "" else f"{self}, 详细信息: {cause}"
