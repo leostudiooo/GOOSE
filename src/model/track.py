@@ -1,6 +1,7 @@
 import json
 import math
 from datetime import datetime
+from typing import Self
 
 from pydantic import BaseModel
 
@@ -22,7 +23,7 @@ class TrackPoint(BaseModel):
     lng: float
     sortNum: int
 
-    def distance_with(self, other: "TrackPoint") -> float:
+    def distance_with(self, other: Self) -> float:
         """使用Haversine公式计算地球上两经纬度点之间的球面距离(km)"""
         rad_lat1 = math.radians(self.lat)
         rad_lat2 = math.radians(other.lat)

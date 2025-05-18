@@ -178,7 +178,7 @@ class GOOSEApp(App):
         super().__init__()
         
         # 初始化业务服务
-        self.service = Service(Path("config/"), Path("resources/default_tracks/"))
+        self.service = Service()
         
         # 设置通知管理器的app引用
         self.notification_mgr.set_app(self)

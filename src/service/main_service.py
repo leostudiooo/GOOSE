@@ -7,7 +7,7 @@ from src.infrastructure import (
     JSONModelStorage,
     YAMLModelStorage,
 )
-from src.model import Exercise, Headers, Track, User, RouteGroup
+from src.model import Headers, Track, User, RouteGroup
 from src.service.record_service import RecordService
 
 logger = logging.getLogger(__name__)
@@ -16,28 +16,29 @@ logger = logging.getLogger(__name__)
 class Service:
     """此类包含了各种供 CLI 和 GUI 使用的业务方法"""
 
-    def __init__(self, config_dir: Path, default_tracks_dir: Path):
+    def __init__(self):
+        config_dir = Path("config")
         sys_config_path = config_dir / "system.yaml"
         user_config_path = config_dir / "user.yaml"
         route_info_path = config_dir / "route_info.yaml"
 
-        self.default_tracks_dir = default_tracks_dir
-        self.route_group_storage = YAMLModelStorage(route_info_path, RouteGroup)
-        self.headers_storage = YAMLModelStorage(sys_config_path, Headers)
-        self.user_storage = YAMLModelStorage(user_config_path, User)
+        self._default_tracks_dir = Path("resources/default_tracks")
+        self._route_group_storage = YAMLModelStorage(route_info_path, RouteGroup)
+        self._headers_storage = YAMLModelStorage(sys_config_path, Headers)
+        self._user_storage = YAMLModelStorage(user_config_path, User)
 
     def get_headers(self) -> Headers:
         """从系统配置文件读取请求头信息"""
-        return self.headers_storage.load()
+        return self._headers_storage.load()
 
     def save_headers(self, headers: Headers):
         """保存请求头信息到系统配置文件"""
-        self.headers_storage.save(headers)
+        self._headers_storage.save(headers)
 
     def get_user(self, use_default: bool = True) -> User:
         """从用户配置文件读取用户信息"""
         try:
-            return self.user_storage.load()
+            return self._user_storage.load()
         except Exception:
             if use_default:
                 return User.get_default()
@@ -45,11 +46,11 @@ class Service:
 
     def save_user(self, user: User):
         """保存用户信息到用户配置文件"""
-        self.user_storage.save(user)
+        self._user_storage.save(user)
 
     def get_route_names(self) -> list[str]:
         """获取所有路线组中路线名称列表"""
-        route_group = self.route_group_storage.load()
+        route_group = self._route_group_storage.load()
         return route_group.get_route_names()
 
     def validate(self):
@@ -72,10 +73,8 @@ class Service:
         加载并验证各种模型, 执行上传操作. 上传出现错误时将抛出 AppError 的子异常
         """
         user, headers, route, track = self._make_models()
-        exercise = Exercise.get_from(user.date_time, track)
-
         client = self._make_client(user, headers)
-        record_service = RecordService(client, exercise, route, user)
+        record_service = RecordService(client, track, route, user)
         record_service.upload()
 
     @staticmethod
@@ -89,14 +88,14 @@ class Service:
         )
 
     def _make_models(self):
-        user = self.user_storage.load()
-        headers = self.headers_storage.load()
-        route_group = self.route_group_storage.load()
+        user = self._user_storage.load()
+        headers = self._headers_storage.load()
+        route_group = self._route_group_storage.load()
 
         route = route_group.get_route(user.route)
 
         if user.custom_track_path == "":
-            track_path = self.default_tracks_dir / f"{route.route_name}.json"
+            track_path = self._default_tracks_dir / f"{route.route_name}.json"
             logger.warning(f"未启用自定义轨迹, 将使用默认的轨迹文件 '{track_path}'")
         else:
             track_path = Path(user.custom_track_path)

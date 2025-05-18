@@ -4,8 +4,8 @@ from pydantic import ValidationError
 
 
 class AppError(Exception):
-    def __init__(self, *args: object):
-        super().__init__(*args)
+    def __init__(self, msg: str):
+        super().__init__(msg)
 
     def _get_cause(self) -> str:
         if isinstance(self.__cause__, AppError):
