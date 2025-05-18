@@ -24,7 +24,7 @@ class User(BaseModel):
     @field_validator("custom_track", mode="before")
     @classmethod
     def validate_custom_track(cls, v: Any):
-        # 处理字符串类型的custom_track，转换为CustomTrack对象
+        # 处理字符串类型的custom_track, 转换为CustomTrack对象
         if isinstance(v, str):
             if v:
                 return CustomTrack(enable=True, file_path=v)
@@ -32,6 +32,16 @@ class User(BaseModel):
         return v
 
     def validate_token(self) -> None:
+        """
+        验证 token 的格式和内容。
+        
+        该方法检查 token 是否由点分隔的三个部分组成, 
+        对来自Base64的第二部分 (有效载荷) 进行解码, 并验证其是否包含必填的“userid”字段。
+
+        :raises
+        InvalidTokenError：如果 token 没有三个部分、无法解码, 或者不包含“userid”字段。
+        """
+
         splits = self.token.split(".")
         if len(splits) != 3:
             msg = f"token 必须包含三个部分, 形如 'part1.part2.part3'"
@@ -55,7 +65,7 @@ class User(BaseModel):
 
     @property
     def custom_track_path(self) -> str:
-        """获取自定义轨迹文件路径，如果未启用则返回空字符串"""
+        """获取自定义轨迹文件路径, 如果未启用则返回空字符串"""
         if isinstance(self.custom_track, str):
             # 向下兼容旧配置
             return self.custom_track
