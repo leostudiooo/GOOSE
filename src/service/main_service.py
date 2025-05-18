@@ -1,6 +1,4 @@
 import logging
-import shutil
-from datetime import datetime
 from pathlib import Path
 
 from src.infrastructure import (
@@ -9,7 +7,6 @@ from src.infrastructure import (
     JSONModelStorage,
     YAMLModelStorage,
 )
-from src.infrastructure.exceptions import AppError
 from src.model import Exercise, Headers, Track, User, RouteGroup
 from src.service.record_service import RecordService
 
