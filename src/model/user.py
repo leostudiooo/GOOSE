@@ -1,7 +1,7 @@
 import base64
 import json
 from datetime import datetime
-from typing import Any, Union, Self
+from typing import Any, Union
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -72,7 +72,7 @@ class User(BaseModel):
         return self.custom_track.file_path if self.custom_track.enable else ""
 
     @classmethod
-    def get_default(cls) -> Self:
+    def get_default(cls) -> "User":
         return cls(
             token="your.token.here",
             date_time=datetime(2017, 1, 1, 10, 0, 0),
