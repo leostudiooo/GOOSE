@@ -1,5 +1,6 @@
 import logging
 import shutil
+from datetime import datetime
 from pathlib import Path
 
 from src.infrastructure import (
@@ -8,6 +9,7 @@ from src.infrastructure import (
     JSONModelStorage,
     YAMLModelStorage,
 )
+from src.infrastructure.exceptions import AppError
 from src.model import Exercise, Headers, Track, User, RouteGroup
 from src.service.record_service import RecordService
 
@@ -20,18 +22,17 @@ class Service:
     def __init__(self, config_dir: Path, default_tracks_dir: Path):
         sys_config_path = config_dir / "system.yaml"
         user_config_path = config_dir / "user.yaml"
-        user_example_path = config_dir / "user_example.yaml"
         route_info_path = config_dir / "route_info.yaml"
+
         self.default_tracks_dir = default_tracks_dir
         self.route_group_storage = YAMLModelStorage(route_info_path, RouteGroup)
         self.headers_storage = YAMLModelStorage(sys_config_path, Headers)
-
-        # 如果用户配置文件不存在，复制示例配置
-        if not user_config_path.exists() and user_example_path.exists():
-            logger.info(f"用户配置文件不存在，从 {user_example_path} 复制示例配置")
-            shutil.copy(user_example_path, user_config_path)
-            
         self.user_storage = YAMLModelStorage(user_config_path, User)
+
+        # 如果用户配置文件不存在，保存默认配置
+        if not user_config_path.exists():
+            self.save_user(User.get_default())
+            logger.info(f"已初始化用户配置文件: {user_config_path}")
 
     def get_headers(self) -> Headers:
         """从系统配置文件读取请求头信息"""
@@ -41,9 +42,14 @@ class Service:
         """保存请求头信息到系统配置文件"""
         self.headers_storage.save(headers)
 
-    def get_user(self) -> User:
+    def get_user(self, use_default: bool = True) -> User:
         """从用户配置文件读取用户信息"""
-        return self.user_storage.load()
+        try:
+            return self.user_storage.load()
+        except Exception:
+            if use_default:
+                return User.get_default()
+            raise
 
     def save_user(self, user: User):
         """保存用户信息到用户配置文件"""
@@ -61,7 +67,7 @@ class Service:
         任一环节验证失败将会抛出 AppError 的子异常.
         """
         user, headers, _, _ = self._make_models()
-        
+
         FileHandler(Path(user.start_image)).check_path()
         FileHandler(Path(user.finish_image)).check_path()
 
@@ -94,16 +100,16 @@ class Service:
         user = self.user_storage.load()
         headers = self.headers_storage.load()
         route_group = self.route_group_storage.load()
-    
+
         route = route_group.get_route(user.route)
-    
+
         if user.custom_track_path == "":
             track_path = self.default_tracks_dir / f"{route.route_name}.json"
             logger.warning(f"未启用自定义轨迹, 将使用默认的轨迹文件 '{track_path}'")
         else:
             track_path = Path(user.custom_track_path)
         track = JSONModelStorage(track_path, Track).load()
-    
+
         user.validate_token()
-        
+
         return user, headers, route, track

@@ -1,7 +1,7 @@
 import base64
 import json
 from datetime import datetime
-from typing import Any, Union
+from typing import Any, Union, Self
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -34,8 +34,8 @@ class User(BaseModel):
     def validate_token(self) -> None:
         """
         验证 token 的格式和内容。
-        
-        该方法检查 token 是否由点分隔的三个部分组成, 
+
+        该方法检查 token 是否由点分隔的三个部分组成,
         对来自Base64的第二部分 (有效载荷) 进行解码, 并验证其是否包含必填的“userid”字段。
 
         :raises
@@ -70,3 +70,14 @@ class User(BaseModel):
             # 向下兼容旧配置
             return self.custom_track
         return self.custom_track.file_path if self.custom_track.enable else ""
+
+    @classmethod
+    def get_default(cls) -> Self:
+        return cls(
+            token="your.token.here",
+            date_time=datetime(2017, 1, 1, 10, 0, 0),
+            start_image="path/to/start/image.jpg",
+            finish_image="path/to/finish/image.jpg",
+            route="梅园田径场",
+            custom_track=CustomTrack(file_path="path/to/custom/track.json"),
+        )
