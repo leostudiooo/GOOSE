@@ -1,7 +1,11 @@
-import unittest
-import json
 import base64
+import json
+import unittest
 from datetime import datetime
+
+from pydantic import ValidationError
+
+from src.infrastructure.exceptions import InvalidTokenError
 from src.model.user import User, CustomTrack
 
 
@@ -26,14 +30,14 @@ class TestUserInitialization(unittest.TestCase):
 class TestTokenValidator(unittest.TestCase):
     def test_invalid_token_parts(self):
         """测试token部分数量不正确"""
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(InvalidTokenError) as cm:
             User(
                 token="invalid.token",
                 date_time=datetime.now(),
                 start_image="start.jpg",
                 finish_image="finish.jpg",
                 route="route1",
-            )
+            ).validate_token()
         self.assertIn("必须包含三个部分", str(cm.exception))
 
     def test_invalid_base64(self):
@@ -41,14 +45,14 @@ class TestTokenValidator(unittest.TestCase):
         invalid_payload = base64.b64encode(b"{invalid_json").decode().rstrip("=")
         token = f"header.{invalid_payload}.signature"
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(InvalidTokenError) as cm:
             User(
                 token=token,
                 date_time=datetime.now(),
                 start_image="start.jpg",
                 finish_image="finish.jpg",
                 route="route1",
-            )
+            ).validate_token()
         self.assertIn("无法被解码", str(cm.exception))
 
     def test_missing_userid(self):
@@ -58,14 +62,14 @@ class TestTokenValidator(unittest.TestCase):
         )
         token = f"header.{payload}.signature"
 
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(InvalidTokenError) as cm:
             User(
                 token=token,
                 date_time=datetime.now(),
                 start_image="start.jpg",
                 finish_image="finish.jpg",
                 route="route1",
-            )
+            ).validate_token()
         self.assertIn("没有userid字段", str(cm.exception))
 
     def test_valid_token(self):
@@ -214,8 +218,8 @@ class TestModelValidate(unittest.TestCase):
             "finish_image": "finish.jpg",
             "route": "route1",
         }
-        with self.assertRaises(ValueError) as cm:
-            User.model_validate(invalid_data)
+        with self.assertRaises(InvalidTokenError) as cm:
+            User.model_validate(invalid_data).validate_token()
         self.assertIn("必须包含三个部分", str(cm.exception))
 
     def test_custom_track_string_conversion(self):
@@ -251,14 +255,14 @@ class TestModelValidate(unittest.TestCase):
         """测试混合类型custom_track输入"""
         # 测试无效类型
         invalid_data = {
-            "token": "valid.token",
+            "token": "invalid.token",
             "date_time": datetime.now(),
             "start_image": "start.jpg",
             "finish_image": "finish.jpg",
             "route": "route1",
             "custom_track": 123,  # 错误类型
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValidationError):
             User.model_validate(invalid_data)
 
     def test_nested_token_validation(self):
@@ -274,8 +278,8 @@ class TestModelValidate(unittest.TestCase):
             "finish_image": "finish.jpg",
             "route": "route1",
         }
-        with self.assertRaises(ValueError) as cm:
-            User.model_validate(invalid_data)
+        with self.assertRaises(InvalidTokenError) as cm:
+            User.model_validate(invalid_data).validate_token()
         self.assertIn("没有userid字段", str(cm.exception))
 
 
