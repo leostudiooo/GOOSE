@@ -29,11 +29,6 @@ class Service:
         self.headers_storage = YAMLModelStorage(sys_config_path, Headers)
         self.user_storage = YAMLModelStorage(user_config_path, User)
 
-        # 如果用户配置文件不存在，保存默认配置
-        if not user_config_path.exists():
-            self.save_user(User.get_default())
-            logger.info(f"已初始化用户配置文件: {user_config_path}")
-
     def get_headers(self) -> Headers:
         """从系统配置文件读取请求头信息"""
         return self.headers_storage.load()
