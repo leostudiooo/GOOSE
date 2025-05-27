@@ -47,19 +47,20 @@ class User(BaseModel):
             msg = f"token 必须包含三个部分, 形如 'part1.part2.part3'"
             raise InvalidTokenError(self.token, msg)
         try:
-            decoded_token = base64.b64decode(splits[1].replace('-', '+').replace('_', '/') + "==") # 处理 base64 URL 编码
+            decoded_token = base64.urlsafe_b64decode(splits[1] + "==") # 处理 base64 URL 编码
             params = json.loads(decoded_token)
         except Exception as e:
             raise InvalidTokenError(self.token, "此token无法被解码") from e
         if "userid" not in params:
             raise InvalidTokenError(self.token, "此token中没有userid字段")
+        
+        return params
 
     @property
     def student_id(self) -> str:
-        self.validate_token()
-        splits = self.token.split(".")
-        decoded_token = base64.b64decode(splits[1] + "==")
-        user_id = json.loads(decoded_token)["userid"]
+        params = self.validate_token()
+        assert "userid" in params, "Token 中必须包含 userid 字段"
+        user_id = params["userid"]
 
         return user_id
 
