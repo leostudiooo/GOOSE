@@ -2,13 +2,13 @@ import asyncio
 import httpx
 import logging
 from textual.app import ComposeResult
-from textual.containers import Container
+from textual.containers import Container, HorizontalGroup
 from textual.screen import ModalScreen
 from textual.widgets import Button, Label, Static, LoadingIndicator
 from textual.message import Message
 
 # 当前应用版本
-CURRENT_VERSION = "0.1.2"
+CURRENT_VERSION = "0.1.3"
 
 class AboutScreen(ModalScreen):
     """关于GOOSE的信息屏幕"""
@@ -49,9 +49,9 @@ class AboutScreen(ModalScreen):
             loading_indicator.visible = False
             yield loading_indicator
             
-            with Container(id="about-buttons"):
+            with HorizontalGroup(id="about-buttons"):
                 yield Button("检查更新", id="check-update", variant="primary")
-                yield Button("关闭", id="close-about", variant="primary")
+                yield Button("关闭", id="close-about", variant="error")
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
         button_id = event.button.id
