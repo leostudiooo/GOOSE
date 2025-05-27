@@ -55,6 +55,23 @@ class TestTokenValidator(unittest.TestCase):
             ).validate_token()
         self.assertIn("无法被解码", str(cm.exception))
 
+    def test_token_with_base64url_characters(self):                                                                   
+        """测试带有base64url特殊字符的token"""                                                                        
+        payload = (                                                                                                   
+            base64.urlsafe_b64encode('{"name": "灵感菇", "userid": "123"}'.encode())                                  
+            .decode()                                                                                                 
+            .rstrip("=")                                                                                              
+        )                                                                                                             
+        valid_data = {                                                                                                
+            "token": f"header.{payload}.sign",                                                                        
+            "date_time": datetime.now().isoformat(),                                                                  
+            "start_image": "start.jpg",                                                                               
+            "finish_image": "finish.jpg",                                                                             
+            "route": "route1",                                                                                        
+        }                                                                                                             
+        user = User.model_validate(valid_data)                                                                        
+        self.assertEqual(user.student_id, "123") 
+
     def test_missing_userid(self):
         """测试token中缺少userid字段"""
         payload = (
