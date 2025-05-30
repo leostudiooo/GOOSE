@@ -150,6 +150,9 @@ GOOSE 的图标由 GOOSE 五个字母变形而来，绘制了一只张开翅膀�
 
 运行后会自动创建 `config/user.yaml` 文件，你也可以直接在 TUI 中进行配置。
 
+> ⚠️ 注意
+> 这里的内容仅供理解配置项的意义。实际操作中，你应当在 TUI 中填写表单进行配置，而不是手动修改配置文件。动手能力强的用户可忽略此提示。
+
 ```yaml
 # 用户登录信息
 token: valid.eyJ1c2VyaWQiOiAiMTIzIn0.token
