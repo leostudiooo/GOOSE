@@ -151,6 +151,7 @@ GOOSE 的图标由 GOOSE 五个字母变形而来，绘制了一只张开翅膀�
 运行后会自动创建 `config/user.yaml` 文件，你也可以直接在 TUI 中进行配置。
 
 > ⚠️ 注意
+> 
 > 这里的内容仅供理解配置项的意义。实际操作中，你应当在 TUI 中填写表单进行配置，而不是手动修改配置文件。动手能力强的用户可忽略此提示。
 
 ```yaml
@@ -175,6 +176,10 @@ custom_track:
 - `finish_image`：结束锻炼时的图片路径。
 - `route`：锻炼的路线名称，默认为“梅园田径场”，可在 TUI 中选择，`config/route_info.yaml` 中有所有可选路线。
 - `custom_track`：自定义轨迹，禁用时使用路线默认轨迹。`enable` 为 `true` 时，`file_path` 为自定义轨迹文件路径，格式为 JSON，使用 [PRTS](https://github.com/leostudiooo/PRTS) 生成。`enable` 为 `false` 时，使用默认轨迹。
+
+> ⚠️ 注意
+>
+> 为了降低被服务器检测到重复路线的风险，您应当自己在 PRTS 上绘制独一无二的路线，一经创建便可重复使用。规则文件在 resource 目录下。
 
 系统配置和路线信息在 `config/system.yaml` 和 `config/route_info.yaml` 中，普通用户无需修改。系统配置包括服务器地址、请求头等信息，路线信息包括所有可选路线的名称和默认轨迹文件路径。
 
