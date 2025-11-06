@@ -7,15 +7,39 @@ from src.model import Exercise, Route, User
 
 
 class RecordService:
+    """
+    运动记录上传服务
+    
+    负责协调运动记录的上传流程，包括图片上传和记录数据的提交。
+    """
+    
     def __init__(
         self, api_client: APIClient, exercise: Exercise, route: Route, user: User
     ):
+        """
+        初始化记录服务
+        
+        Args:
+            api_client: API客户端实例
+            exercise: 运动记录数据
+            route: 运动路线信息
+            user: 用户信息
+        """
         self.client = api_client
         self.exercise = exercise
         self.route = route
         self.user = user
 
     def get_start_record(self, start_image_url: str) -> dict[str, Any]:
+        """
+        构建开始运动记录的数据
+        
+        Args:
+            start_image_url: 开始运动的图片URL
+            
+        Returns:
+            包含开始记录所有必需字段的字典
+        """
         return {
             "routeName": self.route.route_name,
             "ruleId": self.route.rule_id,
@@ -43,6 +67,17 @@ class RecordService:
     def get_finish_record(
         self, start_image_url: str, finish_image_url: str, record_id: str
     ) -> dict[str, Any]:
+        """
+        构建完成运动记录的数据
+        
+        Args:
+            start_image_url: 开始运动的图片URL
+            finish_image_url: 结束运动的图片URL
+            record_id: 服务器返回的记录ID
+            
+        Returns:
+            包含完整运动记录所有字段的字典
+        """
         record = self.get_start_record(start_image_url)
         record_remaining = {
             "endTime": self.exercise.end_time,
@@ -61,6 +96,21 @@ class RecordService:
         return record
 
     def upload(self) -> None:
+        """
+        执行完整的运动记录上传流程
+        
+        流程包括：
+        1. 验证tenant和token
+        2. 上传开始图片
+        3. 提交开始记录
+        4. 上传结束图片
+        5. 提交完成记录
+        
+        Raises:
+            APIClientError: 当API请求失败时
+            FileHandlerError: 当图片文件无法读取时
+            APIResponseError: 当服务器返回错误响应时
+        """
         self.client.check_tenant()
         self.client.check_token()
 
