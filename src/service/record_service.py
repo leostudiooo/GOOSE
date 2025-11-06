@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Any
 
 from src.infrastructure import APIClient, FileHandler
+from src.infrastructure.constants import RECORD_STATUS_FINISHED
 from src.model import Exercise, Route, User
 
 
@@ -53,7 +54,7 @@ class RecordService:
             "speed": self.exercise.pace,
             "dispTimeText": self.exercise.time_text,
             "id": record_id,
-            "nowStatus": 2,
+            "nowStatus": RECORD_STATUS_FINISHED,
         }
         record.update(record_remaining)
 

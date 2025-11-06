@@ -5,6 +5,7 @@ from typing import Any, Union
 
 from pydantic import BaseModel, Field, field_validator
 
+from src.infrastructure.constants import TOKEN_PARTS_COUNT, TOKEN_USERID_FIELD
 from src.infrastructure.exceptions import InvalidTokenError
 
 
@@ -59,7 +60,7 @@ class User(BaseModel):
     @property
     def student_id(self) -> str:
         params = self.validate_token()
-        user_id = params["userid"]
+        user_id = params[TOKEN_USERID_FIELD]
 
         return user_id
 

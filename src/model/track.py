@@ -4,6 +4,8 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from src.infrastructure.constants import EARTH_RADIUS_KM
+
 
 class TrackMetadata(BaseModel):
     totalDistance: float
@@ -36,7 +38,7 @@ class TrackPoint(BaseModel):
                 * math.pow(math.sin(l2 / 2), 2)
             )
         )
-        d *= 6378.13649  # 地球半径(km)
+        d *= EARTH_RADIUS_KM
         return d
 
 

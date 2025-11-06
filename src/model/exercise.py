@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from pydantic import BaseModel
 
+from src.infrastructure.constants import CALORIE_PER_KM
 from src.model.track import Track
 
 
@@ -29,7 +30,7 @@ class Exercise(BaseModel):
             end_time=(date_time + duration).strftime("%H:%M:%S"),
             duration_sec=duration_sec,
             distance_km=f"{distance_km:.2f}",
-            calorie=f"{62 * distance_km:.0f}",
+            calorie=f"{CALORIE_PER_KM * distance_km:.0f}",
             pace="0'00''" if pace_sec == 0 else pace,
             time_text=f"{duration_sec // 3600:02d}:{duration_sec // 60 % 60:02d}:{duration_sec % 60:02d}",
         )

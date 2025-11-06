@@ -2,6 +2,11 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
+from src.infrastructure.constants import (
+    API_ERROR_INVALID_TENANT,
+    API_ERROR_INVALID_TOKEN,
+)
+
 
 class AppError(Exception):
     def __init__(self, *args: object):
@@ -34,8 +39,8 @@ class RouteNotFoundError(AppError):
 
 class APIResponseError(AppError):
     explanations = {
-        -6: "tenant可能有误或已经过期",
-        40005: "token可能有误或已经过期",
+        API_ERROR_INVALID_TENANT: "tenant可能有误或已经过期",
+        API_ERROR_INVALID_TOKEN: "token可能有误或已经过期",
     }
 
     def __init__(self, api_name: str, response_code: int, response_msg: str):
