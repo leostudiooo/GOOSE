@@ -47,5 +47,5 @@ REQUEST_MAX_DELAY_SEC = 3.5  # 请求之间的最大延迟（秒）
 RECORD_STATUS_FINISHED = 2  # 完成状态的记录状态码
 
 # File Configuration
-IMAGE_FILENAME = "1.jpg"  # Default filename for uploaded images
-IMAGE_MIME_TYPE = "image/jpeg"  # MIME type for uploaded images
+IMAGE_FILENAME = "1.jpg"  # 上传图片的默认文件名
+IMAGE_MIME_TYPE = "image/jpeg"  # 上传图片的MIME类型
