@@ -40,8 +40,8 @@ API_ERROR_INVALID_TENANT = -6
 API_ERROR_INVALID_TOKEN = 40005
 
 # Request Configuration
-REQUEST_MIN_DELAY_SEC = 1.5  # Minimum delay between requests in seconds
-REQUEST_MAX_DELAY_SEC = 3.5  # Maximum delay between requests in seconds
+REQUEST_MIN_DELAY_SEC = 1.5  # 请求之间的最小延迟（秒）
+REQUEST_MAX_DELAY_SEC = 3.5  # 请求之间的最大延迟（秒）
 
 # Record Status
 RECORD_STATUS_FINISHED = 2  # Status code for finished exercise record
