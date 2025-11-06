@@ -44,7 +44,7 @@ REQUEST_MIN_DELAY_SEC = 1.5  # 请求之间的最小延迟（秒）
 REQUEST_MAX_DELAY_SEC = 3.5  # 请求之间的最大延迟（秒）
 
 # Record Status
-RECORD_STATUS_FINISHED = 2  # Status code for finished exercise record
+RECORD_STATUS_FINISHED = 2  # 完成状态的记录状态码
 
 # File Configuration
 IMAGE_FILENAME = "1.jpg"  # Default filename for uploaded images
