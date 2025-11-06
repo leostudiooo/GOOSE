@@ -10,21 +10,43 @@ from src.infrastructure.exceptions import InvalidTokenError
 
 
 class CustomTrack(BaseModel):
-    enable: bool = False
-    file_path: str = ""
+    """
+    自定义轨迹配置模型
+    
+    用于配置是否使用自定义轨迹以及轨迹文件路径。
+    """
+    enable: bool = False  # 是否启用自定义轨迹
+    file_path: str = ""  # 自定义轨迹文件路径
 
 
 class User(BaseModel):
-    token: str
-    date_time: datetime
-    start_image: str
-    finish_image: str
-    route: str
-    custom_track: Union[str, CustomTrack] = Field(default_factory=CustomTrack)
+    """
+    用户配置模型
+    
+    包含用户的认证信息、运动偏好和图片配置等。
+    """
+    token: str  # 用户认证令牌
+    date_time: datetime  # 运动时间
+    start_image: str  # 开始运动图片路径
+    finish_image: str  # 结束运动图片路径
+    route: str  # 选择的路线名称
+    custom_track: Union[str, CustomTrack] = Field(default_factory=CustomTrack)  # 自定义轨迹配置
 
     @field_validator("custom_track", mode="before")
     @classmethod
-    def validate_custom_track(cls, v: Any):
+    def validate_custom_track(cls, v: Any) -> Union[str, CustomTrack]:
+        """
+        验证并转换custom_track字段
+        
+        处理字符串类型的custom_track，转换为CustomTrack对象。
+        空字符串转换为禁用状态，非空字符串转换为启用状态。
+        
+        Args:
+            v: custom_track的原始值
+            
+        Returns:
+            CustomTrack对象或原始值
+        """
         # 处理字符串类型的custom_track, 转换为CustomTrack对象
         if isinstance(v, str):
             if v:
@@ -44,7 +66,7 @@ class User(BaseModel):
         """
 
         splits = self.token.split(".")
-        if len(splits) != 3:
+        if len(splits) != TOKEN_PARTS_COUNT:
             msg = f"token 必须包含三个部分, 形如 'part1.part2.part3'"
             raise InvalidTokenError(self.token, msg)
         try:
@@ -52,13 +74,22 @@ class User(BaseModel):
             params = json.loads(decoded_token)
         except Exception as e:
             raise InvalidTokenError(self.token, "此token无法被解码") from e
-        if "userid" not in params:
-            raise InvalidTokenError(self.token, "此token中没有userid字段")
+        if TOKEN_USERID_FIELD not in params:
+            raise InvalidTokenError(self.token, f"此token中没有{TOKEN_USERID_FIELD}字段")
         
         return params
 
     @property
     def student_id(self) -> str:
+        """
+        从token中提取学生ID
+        
+        Returns:
+            学生ID字符串
+            
+        Raises:
+            InvalidTokenError: 当token无效时
+        """
         params = self.validate_token()
         user_id = params[TOKEN_USERID_FIELD]
 
@@ -66,7 +97,15 @@ class User(BaseModel):
 
     @property
     def custom_track_path(self) -> str:
-        """获取自定义轨迹文件路径, 如果未启用则返回空字符串"""
+        """
+        获取自定义轨迹文件路径
+        
+        如果未启用自定义轨迹则返回空字符串。
+        提供向下兼容旧配置格式的支持。
+        
+        Returns:
+            自定义轨迹文件路径，或空字符串
+        """
         if isinstance(self.custom_track, str):
             # 向下兼容旧配置
             return self.custom_track
