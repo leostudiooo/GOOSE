@@ -3,7 +3,7 @@ name = "goose"
 version = "0.1.2"
 requires-python = ">=3.9"
 dependencies = [
-    "brotli==1.1.0",
+    "Brotli==1.1.0",
     "customtkinter==5.2.2",
     "httpx==0.28.1",
     "linkify-it-py==2.0.3",
