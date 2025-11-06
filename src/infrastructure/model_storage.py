@@ -5,8 +5,7 @@ import yaml
 from pydantic import ValidationError, BaseModel
 from yaml import YAMLError
 
-from src.infrastructure import FileHandler
-from src.infrastructure.exceptions import FileHandlerError, ModelValidationError
+from src.infrastructure.exceptions import ModelStorageError, ModelValidationError
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -17,24 +16,24 @@ class YAMLModelStorage(Generic[T]):
 
     def load(self, name) -> T:
         file_path = self._file_dir / f"{name}.yaml"
-        with FileHandler(file_path) as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             try:
                 data = yaml.safe_load(f.read())
                 return self._model_class.model_validate(data)
             except YAMLError as e:
-                msg = f"解析 YAML 文件 '{file_path}' 失败"
-                raise FileHandlerError(file_path, msg) from e
+                msg = f"从 YAML 文件 '{file_path}' 中加载数据模型失败"
+                raise ModelStorageError(file_path, msg) from e
             except ValidationError as e:
                 raise ModelValidationError(f"文件 '{file_path}' 验证不通过", e) from e
 
     def save(self, name, model: T) -> None:
         file_path = self._file_dir / f"{name}.yaml"
-        with FileHandler(file_path, "w") as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             try:
                 f.write(yaml.safe_dump(model.model_dump(), allow_unicode=True))
             except Exception as e:
-                msg = f"保存文件 '{file_path}' 失败"
-                raise FileHandlerError(file_path, msg) from e
+                msg = f"保存数据模型到 '{file_path}' 失败"
+                raise ModelStorageError(file_path, msg) from e
 
     def set_file_dir(self, dir_path: Path) -> "YAMLModelStorage":
         self._file_dir = dir_path

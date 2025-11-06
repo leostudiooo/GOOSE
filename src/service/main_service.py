@@ -3,7 +3,6 @@ from pathlib import Path
 
 from src.infrastructure import (
     APIClient,
-    FileHandler,
     YAMLModelStorage,
 )
 from src.model import Exercise, Headers, Track, User, RouteGroup, Route
@@ -56,9 +55,8 @@ class Service:
         user = self._user_storage.load("user")
         headers = self._headers_storage.load("headers")
 
-        # TODO: 检查路径
-        FileHandler(Path(user.start_image)).check_path()
-        FileHandler(Path(user.finish_image)).check_path()
+        open(user.start_image, "rb")
+        open(user.finish_image, "rb")
 
         client = self._construct_client(user, headers)
         client.check_tenant()
