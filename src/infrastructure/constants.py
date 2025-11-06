@@ -31,7 +31,7 @@ TOKEN_PARTS_COUNT = 3
 TOKEN_USERID_FIELD = "userid"
 
 # Exercise Calculations
-CALORIE_PER_KM = 62  # Calories burned per kilometer
+CALORIE_PER_KM = 62  # 每公里消耗的卡路里
 EARTH_RADIUS_KM = 6378.13649  # Earth radius in kilometers for Haversine formula
 
 # API Response Codes
