@@ -12,3 +12,4 @@ mdit-py-plugins==0.4.2
 linkify-it-py==2.0.3
 httpx==0.28.1
 customtkinter==5.2.2
+Brotli==1.1.0
