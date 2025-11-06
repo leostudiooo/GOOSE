@@ -180,7 +180,7 @@ class Service:
         return APIClient(
             headers.user_agent,
             headers.miniapp_version,
-            str(headers.referer),
+            headers.referer,
             headers.tenant,
             user.token,
         )
