@@ -1,7 +1,7 @@
 """
-Constants used throughout the GOOSE application.
-This module centralizes all magic numbers, strings, and configuration values
-to improve maintainability and reduce duplication.
+本模块包含 GOOSE 应用程序中使用的常量。
+该模块集中管理所有魔法数字、字符串和配置值，
+以提高可维护性并减少重复。
 """
 
 # API Configuration
