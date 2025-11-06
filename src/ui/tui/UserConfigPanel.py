@@ -18,7 +18,7 @@ class UserConfigPanel(VerticalScroll):
         super().__init__(id="user_config")
         self._user = None
         # 直接创建Service实例，不依赖app
-        self._service = Service(Path("config/"), Path("resources/default_tracks/"))
+        self._service = Service()
     
     def compose(self) -> ComposeResult:
         """创建用户配置编辑表单"""

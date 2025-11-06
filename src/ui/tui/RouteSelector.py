@@ -28,7 +28,7 @@ class RouteSelector(Vertical):
         super().__init__(id=id)
         self._routes = []
         # 直接创建Service实例，不依赖app
-        self._service = Service(Path("config/"), Path("resources/default_tracks/"))
+        self._service = Service()
 
     def compose(self) -> ComposeResult:
         """创建组件"""
@@ -42,7 +42,7 @@ class RouteSelector(Vertical):
     def load_routes(self):
         """从服务加载可用的路线列表"""
         try:
-            route_names = self._service.route_group_storage.load().get_route_names()
+            route_names = self._service.get_route_names()
             self._routes = route_names
             route_options = [(name, name) for name in route_names]
             self.query_one(Select).set_options(route_options)
