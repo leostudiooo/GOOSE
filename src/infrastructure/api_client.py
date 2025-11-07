@@ -47,8 +47,6 @@ def api_wrapper(desc: str):
             logging.info(f"正在{desc}")
             try:
                 return func(*args, **kwargs)
-            except AppError:
-                raise
             except Exception as e:
                 raise APIClientError(desc) from e
 

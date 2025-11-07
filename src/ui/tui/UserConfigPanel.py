@@ -11,6 +11,9 @@ from src.service.main_service import Service
 
 import logging
 
+from ...infrastructure.exceptions import AppError
+
+
 class UserConfigPanel(VerticalScroll):
     """用户配置编辑面板"""
     
@@ -64,7 +67,9 @@ class UserConfigPanel(VerticalScroll):
             logging.info("用户配置已加载")
             if hasattr(self.app, 'notify'):
                 self.app.notify("用户配置已加载", severity="information")
-            
+
+        except AppError as e:
+            logging.error(e.explain())
         except Exception as e:
             logging.error(f"加载用户配置失败: {e}")
     
@@ -95,7 +100,9 @@ class UserConfigPanel(VerticalScroll):
             logging.info("用户配置已保存")
             if hasattr(self.app, 'notify'):
                 self.app.notify("用户配置已保存", severity="information")
-                
+
+        except AppError as e:
+            logging.error(e.explain())
         except Exception as e:
             logging.error(f"保存用户配置失败: {e}")
 

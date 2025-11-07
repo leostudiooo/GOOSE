@@ -1,10 +1,27 @@
+import functools
 import logging
 from pathlib import Path
+from typing import Callable
 
 from src.infrastructure import APIClient, YAMLModelStorage
+from src.infrastructure.exceptions import ServiceError
 from src.model import Exercise, Headers, Track, User, RouteGroup, Route
 from src.service.record_service import RecordService
 
+
+def service_wrapper(desc: str):
+    def decorator(func: Callable):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            logging.info(f"正在{desc}")
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                raise ServiceError(desc) from e
+
+        return wrapper
+
+    return decorator
 
 class Service:
     """此类包含了各种供 CLI 和 GUI 使用的业务方法"""
@@ -16,14 +33,7 @@ class Service:
         self._user_storage = YAMLModelStorage(Path("config/"), User)
         self._track_storage = YAMLModelStorage(self._default_tracks_path, Track)
 
-    def get_headers(self) -> Headers:
-        """从系统配置文件读取请求头信息"""
-        return self._headers_storage.load("headers")
-
-    def save_headers(self, headers: Headers):
-        """保存请求头信息到系统配置文件"""
-        self._headers_storage.save("headers", headers)
-
+    @service_wrapper("加载用户配置")
     def get_user_or_default(self) -> User:
         """从用户配置文件读取用户信息"""
         try:
@@ -32,15 +42,18 @@ class Service:
             logging.warning("无法加载用户配置")
             return User.get_default()
 
+    @service_wrapper("保存用户配置")
     def save_user(self, user: User):
         """保存用户信息到用户配置文件"""
         self._user_storage.save("user", user)
 
+    @service_wrapper("加载路线名称列表")
     def get_route_names(self) -> list[str]:
         """获取所有路线组中路线名称列表"""
         route_group = self._route_group_storage.load("route_group")
         return route_group.get_route_names()
 
+    @service_wrapper("验证系统配置和用户配置")
     def validate(self):
         """
         验证系统配置文件和用户配置文件，并确保所有相关资源路径有效且数据合法, 同时验证 tenant 和 token.
@@ -57,6 +70,7 @@ class Service:
         client.check_tenant()
         client.check_token()
 
+    @service_wrapper("上传运动记录")
     def upload(self):
         """
         加载并验证各种模型, 执行上传操作. 上传出现错误时将抛出 AppError 的子异常

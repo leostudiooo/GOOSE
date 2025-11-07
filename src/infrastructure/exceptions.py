@@ -29,9 +29,12 @@ class AppError(Exception):
             return self.__cause__.explain()
 
         if isinstance(self.__cause__, Exception):
-            return str(self.__cause__)
+            return f"{type(self.__cause__).__name__} -> {self.__cause__}"
 
         return ""
+
+    def _desc_with_type(self) -> str:
+        return f"{self}({type(self).__name__})"
 
     def explain(self) -> str:
         """
@@ -41,7 +44,19 @@ class AppError(Exception):
             包含错误信息和原因的完整说明
         """
         cause = self._get_cause()
-        return str(self) if cause == "" else f"{self}, 原因是{cause}"
+        return f"{self._desc_with_type()}" + ("" if cause == "" else f"\n 由于: {cause}")
+
+
+class ServiceError(AppError):
+    def __init__(self, desc: str):
+        """
+        业务操作异常
+
+        Args:
+            desc: 错误操作的描述
+        """
+        self.desc = desc
+        super().__init__(f"{desc}失败")
 
 
 class RouteNotFoundError(AppError):
@@ -71,7 +86,7 @@ class RouteNotFoundError(AppError):
         """
         valid_route_names = [f"'{route_name}'" for route_name in self.valid_route_names]
         valid_route_names = ", ".join(valid_route_names)
-        return f"{self}, 可用的路线包括 {valid_route_names}"
+        return f"{self._desc_with_type()}, " + (f"可用的路线包括 {valid_route_names}" if valid_route_names != "" else "无任何可用路线")
 
 
 class APIResponseError(AppError):
@@ -97,9 +112,7 @@ class APIResponseError(AppError):
         """
         self.response_code = response_code
         msg = f", 附加信息为 '{response_msg}'" if response_msg != "" else ""
-        super().__init__(
-            f"API '{api_name}' 的响应异常. 响应中的错误码为 {response_code}{msg}"
-        )
+        super().__init__(f"API '{api_name}' 的响应异常. 响应中的错误码为 {response_code}{msg}")
 
     def explain(self) -> str:
         """
@@ -110,7 +123,7 @@ class APIResponseError(AppError):
         """
         explanation = self.explanations.get(self.response_code, "")
         explanation = f". {explanation}" if explanation != "" else ""
-        return f"{self}{explanation}"
+        return f"{self._desc_with_type()}{explanation}"
 
 
 class APIClientError(AppError):
@@ -146,10 +159,7 @@ class ModelValidationError(AppError):
             msg: 错误消息前缀
             error: Pydantic的ValidationError对象
         """
-        errors = [
-            f"{''.join(map(str, error['loc']))}: {error['msg']}"
-            for error in error.errors()
-        ]
+        errors = [f"{''.join(map(str, error['loc']))}: {error['msg']}" for error in error.errors()]
         errors = "\n".join(errors)
         super().__init__(f"{msg}:\n{errors}")
 
@@ -160,7 +170,7 @@ class ModelValidationError(AppError):
         Returns:
             完整的验证错误信息
         """
-        return str(self)
+        return self._desc_with_type()
 
 
 class ModelStorageError(AppError):
@@ -186,13 +196,3 @@ class InvalidTokenError(AppError):
         """
         self.token = token
         super().__init__(f"无效的token. {msg}")
-
-    def explain(self) -> str:
-        """
-        获取详细的错误说明
-
-        Returns:
-            包含原因的完整错误说明
-        """
-        cause = self._get_cause()
-        return str(self) if cause == "" else f"{self}, 详细信息: {cause}"

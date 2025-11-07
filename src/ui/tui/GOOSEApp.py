@@ -206,12 +206,10 @@ class GOOSEApp(App):
     
     def action_validate(self) -> None:
         """验证配置"""
-        logging.info("开始验证配置...")
         self.query_one(ActionPanel).validate_config()
     
     def action_upload(self) -> None:
         """上传记录"""
-        logging.info("开始上传记录...")
         self.query_one(ActionPanel).upload_record()
     
     def action_toggle_logs(self) -> None:

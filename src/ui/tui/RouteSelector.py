@@ -5,6 +5,7 @@ from pathlib import Path
 
 import logging
 
+from src.infrastructure.exceptions import AppError
 # 直接引入Service类
 from src.service.main_service import Service
 
@@ -46,7 +47,9 @@ class RouteSelector(Vertical):
             self._routes = route_names
             route_options = [(name, name) for name in route_names]
             self.query_one(Select).set_options(route_options)
-            
+
+        except AppError as e:
+            logging.error(e.explain())
         except Exception as e:
             logging.error(f"加载路线列表失败: {e}")
     

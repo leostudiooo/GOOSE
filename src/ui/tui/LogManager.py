@@ -52,7 +52,7 @@ class LogHandler(logging.Handler):
         """
         super().__init__()
         self.log_store = log_store
-        self.formatter = logging.Formatter('%(asctime)s \\[%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+        self.formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
     def emit(self, record: logging.LogRecord) -> None:
         """
