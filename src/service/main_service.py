@@ -1,14 +1,9 @@
 import logging
 from pathlib import Path
 
-from src.infrastructure import (
-    APIClient,
-    YAMLModelStorage,
-)
+from src.infrastructure import APIClient, YAMLModelStorage
 from src.model import Exercise, Headers, Track, User, RouteGroup, Route
 from src.service.record_service import RecordService
-
-logger = logging.getLogger(__name__)
 
 
 class Service:
@@ -29,12 +24,12 @@ class Service:
         """保存请求头信息到系统配置文件"""
         self._headers_storage.save("headers", headers)
 
-    def get_user(self) -> User:
+    def get_user_or_default(self) -> User:
         """从用户配置文件读取用户信息"""
         try:
             return self._user_storage.load("user")
         except:
-            logger.warning("无法加载用户配置")
+            logging.warning("无法加载用户配置")
             return User.get_default()
 
     def save_user(self, user: User):
@@ -55,8 +50,8 @@ class Service:
         user = self._user_storage.load("user")
         headers = self._headers_storage.load("headers")
 
-        open(user.start_image, "rb")
-        open(user.finish_image, "rb")
+        open(user.start_image, "rb").close()
+        open(user.finish_image, "rb").close()
 
         client = self._construct_client(user, headers)
         client.check_tenant()
@@ -81,7 +76,7 @@ class Service:
 
     def _load_track(self, route: Route, user: User) -> Track:
         if user.custom_track_path == "":
-            logger.warning(f"未启用自定义轨迹, 将使用默认的轨迹文件")
+            logging.warning(f"未启用自定义轨迹, 将使用默认的轨迹文件")
             track = self._track_storage.set_file_dir(self._default_tracks_path).load(route.route_name)
         else:
             track_path = Path(user.custom_track_path)

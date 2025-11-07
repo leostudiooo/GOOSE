@@ -39,14 +39,12 @@ from src.infrastructure.exceptions import APIClientError, APIResponseError, AppE
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)  # 忽略SSL警告
 urllib3.disable_warnings(UserWarning)  # 忽略用户警告
 
-logger = logging.getLogger(__name__)
-
 
 def api_wrapper(desc: str):
     def decorator(func: Callable):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            logger.info(f"正在{desc}")
+            logging.info(f"正在{desc}")
             try:
                 return func(*args, **kwargs)
             except AppError:
@@ -174,18 +172,18 @@ class APIClient:
 
     def _request(self, url: str, method: str = "POST", **kwargs):
         full_url = f"{self._base_url}{url}"
-        logger.debug(f"正在向 '{full_url}' 发送 {method} 请求")
+        logging.debug(f"正在向 '{full_url}' 发送 {method} 请求")
 
         time.sleep(random.uniform(REQUEST_MIN_DELAY_SEC, REQUEST_MAX_DELAY_SEC))  # 添加随机延迟, 避免发送请求过快
         response = self._session.request(method, full_url, **kwargs)
 
-        logger.debug(f"来自 '{full_url}' 的响应状态码为 {response.status_code}")
+        logging.debug(f"来自 '{full_url}' 的响应状态码为 {response.status_code}")
         response_json = response.json()
         code: int = response_json.get("code", 1 - (1 << 31))
 
         if code != API_SUCCESS_CODE:
             raise APIResponseError(response.url, code, response_json.get("msg", ""))
-        logger.debug(f"来自 '{response.url}' 的响应: {response_json}")
+        logging.debug(f"来自 '{response.url}' 的响应: {response_json}")
         response.raise_for_status()
 
         return response

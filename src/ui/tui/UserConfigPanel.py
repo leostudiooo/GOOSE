@@ -44,7 +44,7 @@ class UserConfigPanel(VerticalScroll):
         """从配置文件加载用户配置"""
         try:
             # 使用本地service实例
-            user = self._service.get_user()
+            user = self._service.get_user_or_default()
             self._user = user
             
             # 填充表单
