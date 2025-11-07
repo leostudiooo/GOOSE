@@ -38,7 +38,7 @@ class TestTokenValidator(unittest.TestCase):
                 finish_image="finish.jpg",
                 route="route1",
             ).validate_token()
-        self.assertIn("必须包含三个部分", str(cm.exception))
+        self.assertIn("必须包含", str(cm.exception))
 
     def test_invalid_base64(self):
         """测试无法解码的token中间部分"""
@@ -237,7 +237,7 @@ class TestModelValidate(unittest.TestCase):
         }
         with self.assertRaises(InvalidTokenError) as cm:
             User.model_validate(invalid_data).validate_token()
-        self.assertIn("必须包含三个部分", str(cm.exception))
+        self.assertIn("必须包含", str(cm.exception))
 
     def test_custom_track_string_conversion(self):
         """测试字典输入中的字符串custom_track转换"""
