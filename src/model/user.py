@@ -5,6 +5,7 @@ from typing import Any, Union
 
 from pydantic import BaseModel, Field, field_validator
 
+from src.infrastructure.constants import TOKEN_PARTS_COUNT, TOKEN_USERID_FIELD
 from src.infrastructure.exceptions import InvalidTokenError
 
 
@@ -43,8 +44,8 @@ class User(BaseModel):
         """
 
         splits = self.token.split(".")
-        if len(splits) != 3:
-            msg = f"token 必须包含三个部分, 形如 'part1.part2.part3'"
+        if len(splits) != TOKEN_PARTS_COUNT:
+            msg = f"token 必须包含 {TOKEN_PARTS_COUNT} 个部分, 形如 'part1.part2.part3'"
             raise InvalidTokenError(self.token, msg)
         try:
             decoded_token = base64.urlsafe_b64decode(splits[1] + "=" * (-len(splits[1]) % 4))  # 处理 base64 URL 编码
@@ -59,7 +60,7 @@ class User(BaseModel):
     @property
     def student_id(self) -> str:
         params = self.validate_token()
-        user_id: str = params["userid"]
+        user_id: str = params[TOKEN_USERID_FIELD]
 
         return user_id
 
