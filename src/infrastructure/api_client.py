@@ -173,14 +173,14 @@ class APIClient:
         logging.debug(f"正在向 '{full_url}' 发送 {method} 请求")
 
         time.sleep(random.uniform(REQUEST_MIN_DELAY_SEC, REQUEST_MAX_DELAY_SEC))  # 添加随机延迟, 避免发送请求过快
-        response = self._session.request(method, full_url, **kwargs)
 
+        response = self._session.request(method, full_url, **kwargs)
         logging.debug(f"来自 '{full_url}' 的响应状态码为 {response.status_code}")
         response_json = response.json()
         code: int = response_json.get("code", 1 - (1 << 31))
-
         if code != API_SUCCESS_CODE:
             raise APIResponseError(response.url, code, response_json.get("msg", ""))
+
         logging.debug(f"来自 '{response.url}' 的响应: {response_json}")
         response.raise_for_status()
 

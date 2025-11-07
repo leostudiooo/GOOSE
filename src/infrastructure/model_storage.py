@@ -9,6 +9,7 @@ from src.infrastructure.exceptions import ModelStorageError, ModelValidationErro
 
 T = TypeVar("T", bound=BaseModel)
 
+
 class YAMLModelStorage(Generic[T]):
     def __init__(self, file_dir: Path, model_class: type[T]):
         self._file_dir = file_dir

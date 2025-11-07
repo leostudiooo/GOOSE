@@ -23,6 +23,7 @@ def service_wrapper(desc: str):
 
     return decorator
 
+
 class Service:
     """此类包含了各种供 CLI 和 GUI 使用的业务方法"""
 
@@ -39,7 +40,7 @@ class Service:
         try:
             return self._user_storage.load("user")
         except:
-            logging.warning("无法加载用户配置")
+            logging.warning("无法加载用户配置, 将使用默认的用户配置")
             return User.get_default()
 
     @service_wrapper("保存用户配置")
@@ -82,7 +83,7 @@ class Service:
         user.validate_token()
         route = route_group.get_route(user.route)
         track = self._load_track(route, user)
-        exercise = Exercise.get_from(user.date_time, track)
+        exercise = Exercise.construct_from(user.date_time, track)
 
         client = self._construct_client(user, headers)
         record_service = RecordService(client, exercise, route, user)

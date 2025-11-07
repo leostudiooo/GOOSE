@@ -10,9 +10,10 @@ from src.infrastructure.constants import EARTH_RADIUS_KM
 class TrackMetadata(BaseModel):
     """
     轨迹元数据模型
-    
+
     包含轨迹的统计信息和元数据。
     """
+
     totalDistance: float  # 总距离（米）
     formattedDistance: str  # 格式化的距离字符串
     totalTime: int  # 总时间（秒）
@@ -25,7 +26,7 @@ class TrackMetadata(BaseModel):
 class TrackPoint(BaseModel):
     """
     单个经纬度轨迹点
-    
+
     表示运动轨迹上的一个地理位置点。
     """
 
@@ -36,12 +37,12 @@ class TrackPoint(BaseModel):
     def distance_with(self, other: "TrackPoint") -> float:
         """
         计算两个轨迹点之间的距离
-        
+
         使用Haversine公式计算地球上两经纬度点之间的球面距离。
-        
+
         Args:
             other: 另一个轨迹点
-            
+
         Returns:
             两点之间的距离（公里）
         """
@@ -49,14 +50,7 @@ class TrackPoint(BaseModel):
         rad_lat2 = math.radians(other.lat)
         l1 = rad_lat1 - rad_lat2
         l2 = math.radians(self.lng) - math.radians(other.lng)
-        d = 2 * math.asin(
-            math.sqrt(
-                math.pow(math.sin(l1 / 2), 2)
-                + math.cos(rad_lat1)
-                * math.cos(rad_lat2)
-                * math.pow(math.sin(l2 / 2), 2)
-            )
-        )
+        d = 2 * math.asin(math.sqrt(math.pow(math.sin(l1 / 2), 2) + math.cos(rad_lat1) * math.cos(rad_lat2) * math.pow(math.sin(l2 / 2), 2)))
         d *= EARTH_RADIUS_KM
         return d
 
@@ -64,7 +58,7 @@ class TrackPoint(BaseModel):
 class Track(BaseModel):
     """
     运动轨迹数据模型
-    
+
     包含完整的轨迹点列表和元数据，提供距离计算等功能。
     """
 
@@ -74,9 +68,9 @@ class Track(BaseModel):
     def get_distance_km(self) -> float:
         """
         计算轨迹的总距离
-        
+
         通过累加相邻轨迹点之间的距离来计算总距离。
-        
+
         Returns:
             总距离（公里）
         """
@@ -89,7 +83,7 @@ class Track(BaseModel):
     def get_track_str(self) -> str:
         """
         获取轨迹的JSON字符串表示
-        
+
         Returns:
             轨迹点列表的JSON字符串
         """
@@ -98,7 +92,7 @@ class Track(BaseModel):
     def get_duration_sec(self) -> int:
         """
         获取轨迹的持续时间
-        
+
         Returns:
             持续时间（秒）
         """
