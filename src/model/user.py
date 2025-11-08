@@ -1,9 +1,9 @@
 import base64
 import json
 from datetime import datetime
-from typing import Any, Union
+from typing import Any
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 
 from src.infrastructure.constants import TOKEN_PARTS_COUNT, TOKEN_USERID_FIELD
 from src.infrastructure.exceptions import InvalidTokenError
@@ -20,27 +20,12 @@ class User(BaseModel):
     start_image: str
     finish_image: str
     route: str
-    custom_track: Union[str, CustomTrack] = Field(default_factory=CustomTrack)
+    custom_track: CustomTrack = Field(default_factory=CustomTrack)
 
-    @field_validator("custom_track", mode="before")
-    @classmethod
-    def validate_custom_track(cls, v: Any):
-        # 处理字符串类型的custom_track, 转换为CustomTrack对象
-        if isinstance(v, str):
-            if v:
-                return CustomTrack(enable=True, file_path=v)
-            return CustomTrack()
-        return v
-
-    def validate_token(self) -> dict[str, Any]:
+    def decode_token(self) -> dict[str, Any]:
         """
-        验证 token 的格式和内容。
-
-        该方法检查 token 是否由点分隔的三个部分组成,
-        对来自Base64的第二部分 (有效载荷) 进行解码, 并验证其是否包含必填的“userid”字段。
-
-        :raises
-        InvalidTokenError：如果 token 没有三个部分、无法解码, 或者不包含“userid”字段。
+        该方法会检查 token 是否由点分隔的三个部分组成, 对来自Base64的第二部分 (有效载荷) 进行解码, 并验证其是否包含必填的 userid 字段.
+        解码失败则会抛出 InvalidTokenError 异常.
         """
 
         splits = self.token.split(".")
@@ -59,7 +44,7 @@ class User(BaseModel):
 
     @property
     def student_id(self) -> str:
-        params = self.validate_token()
+        params = self.decode_token()
         user_id: str = params[TOKEN_USERID_FIELD]
 
         return user_id
@@ -67,9 +52,6 @@ class User(BaseModel):
     @property
     def custom_track_path(self) -> str:
         """获取自定义轨迹文件路径, 如果未启用则返回空字符串"""
-        if isinstance(self.custom_track, str):
-            # 向下兼容旧配置
-            return self.custom_track
         return self.custom_track.file_path if self.custom_track.enable else ""
 
     @classmethod

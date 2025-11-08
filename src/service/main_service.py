@@ -64,7 +64,7 @@ class Service:
         user = self._user_storage.load("user")
         headers = self._headers_storage.load("headers")
 
-        user.validate_token()
+        user.decode_token()
 
         open(user.start_image, "rb").close()
         open(user.finish_image, "rb").close()
@@ -82,12 +82,13 @@ class Service:
         headers = self._headers_storage.load("headers")
         route_group = self._route_group_storage.load("route_group")
 
-        user.validate_token()
+        user.decode_token()
+
         route = route_group.get_route(user.route)
         track = self._load_track(route, user)
         exercise = Exercise.construct_from(user.date_time, track)
-
         client = self._construct_client(user, headers)
+
         record_service = RecordService(client, exercise, route, user)
         record_service.upload()
 

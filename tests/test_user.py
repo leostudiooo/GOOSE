@@ -37,7 +37,7 @@ class TestTokenValidator(unittest.TestCase):
                 start_image="start.jpg",
                 finish_image="finish.jpg",
                 route="route1",
-            ).validate_token()
+            ).decode_token()
         self.assertIn("必须包含", str(cm.exception))
 
     def test_invalid_base64(self):
@@ -52,7 +52,7 @@ class TestTokenValidator(unittest.TestCase):
                 start_image="start.jpg",
                 finish_image="finish.jpg",
                 route="route1",
-            ).validate_token()
+            ).decode_token()
         self.assertIn("无法被解码", str(cm.exception))
 
     def test_token_with_base64url_characters(self):                                                                   
@@ -86,7 +86,7 @@ class TestTokenValidator(unittest.TestCase):
                 start_image="start.jpg",
                 finish_image="finish.jpg",
                 route="route1",
-            ).validate_token()
+            ).decode_token()
         self.assertIn("没有userid字段", str(cm.exception))
 
     def test_valid_token(self):
@@ -109,34 +109,6 @@ class TestTokenValidator(unittest.TestCase):
 
 
 class TestCustomTrackValidator(unittest.TestCase):
-    def test_empty_string_conversion(self):
-        """测试空字符串转换为默认CustomTrack"""
-        user = User(
-            token="valid.eyJ1c2VyaWQiOiAiMTIzIn0.token",
-            date_time=datetime.now(),
-            start_image="start.jpg",
-            finish_image="finish.jpg",
-            route="route1",
-            custom_track="",
-        )
-        self.assertIsInstance(user.custom_track, CustomTrack)
-        self.assertFalse(user.custom_track.enable)
-        self.assertEqual(user.custom_track.file_path, "")
-
-    def test_non_empty_string_conversion(self):
-        """测试非空字符串转换为启用的CustomTrack"""
-        user = User(
-            token="valid.eyJ1c2VyaWQiOiAiMTIzIn0.token",
-            date_time=datetime.now(),
-            start_image="start.jpg",
-            finish_image="finish.jpg",
-            route="route1",
-            custom_track="/path/to/file",
-        )
-        self.assertIsInstance(user.custom_track, CustomTrack)
-        self.assertTrue(user.custom_track.enable)
-        self.assertEqual(user.custom_track.file_path, "/path/to/file")
-
     def test_custom_track_object(self):
         """测试直接传入CustomTrack对象"""
         ct = CustomTrack(enable=True, file_path="/custom/path")
@@ -172,18 +144,6 @@ class TestStudentIdProperty(unittest.TestCase):
 
 
 class TestCustomTrackPathProperty(unittest.TestCase):
-    def test_legacy_string_path(self):
-        """测试旧版字符串路径兼容性"""
-        user = User(
-            token="valid.eyJ1c2VyaWQiOiAiMTIzIn0.token",
-            date_time=datetime.now(),
-            start_image="start.jpg",
-            finish_image="finish.jpg",
-            route="route1",
-            custom_track="/old/path",
-        )
-        self.assertEqual(user.custom_track_path, "/old/path")
-
     def test_enabled_custom_track(self):
         """测试启用的自定义轨迹路径"""
         ct = CustomTrack(enable=True, file_path="/new/path")
@@ -236,22 +196,8 @@ class TestModelValidate(unittest.TestCase):
             "route": "route1",
         }
         with self.assertRaises(InvalidTokenError) as cm:
-            User.model_validate(invalid_data).validate_token()
+            User.model_validate(invalid_data).decode_token()
         self.assertIn("必须包含", str(cm.exception))
-
-    def test_custom_track_string_conversion(self):
-        """测试字典输入中的字符串custom_track转换"""
-        test_data = {
-            "token": "valid.eyJ1c2VyaWQiOiAiMTIzIn0=.token",
-            "date_time": datetime.now().isoformat(),
-            "start_image": "start.jpg",
-            "finish_image": "finish.jpg",
-            "route": "route1",
-            "custom_track": "/data/custom.csv",
-        }
-        user = User.model_validate(test_data)
-        self.assertTrue(user.custom_track.enable)
-        self.assertEqual(user.custom_track.file_path, "/data/custom.csv")
 
     def test_custom_track_dict_input(self):
         """测试直接传入CustomTrack字典结构"""
@@ -296,7 +242,7 @@ class TestModelValidate(unittest.TestCase):
             "route": "route1",
         }
         with self.assertRaises(InvalidTokenError) as cm:
-            User.model_validate(invalid_data).validate_token()
+            User.model_validate(invalid_data).decode_token()
         self.assertIn("没有userid字段", str(cm.exception))
 
 
