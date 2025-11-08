@@ -80,5 +80,5 @@ class User(BaseModel):
             start_image="path/to/start/image.jpg",
             finish_image="path/to/finish/image.jpg",
             route="梅园田径场",
-            custom_track=CustomTrack(enable=False, file_path="resources/my_tracks/track.yaml"),
+            custom_track=CustomTrack(enable=False, file_path="path/to/custom/track.yaml"),
         )

@@ -64,6 +64,8 @@ class Service:
         user = self._user_storage.load("user")
         headers = self._headers_storage.load("headers")
 
+        user.validate_token()
+
         open(user.start_image, "rb").close()
         open(user.finish_image, "rb").close()
 
