@@ -27,12 +27,10 @@ def service_wrapper(desc: str):
 class Service:
     """此类包含了各种供 CLI 和 GUI 使用的业务方法"""
 
-    def __init__(self):
-        self._default_tracks_path = Path("resources/default_tracks/")
-        self._route_group_storage = YAMLModelStorage(Path("config/"), RouteGroup)
-        self._headers_storage = YAMLModelStorage(Path("config/"), Headers)
-        self._user_storage = YAMLModelStorage(Path("config/"), User)
-        self._track_storage = YAMLModelStorage(self._default_tracks_path, Track)
+    _route_group_storage = YAMLModelStorage(Path("config/"), RouteGroup)
+    _headers_storage = YAMLModelStorage(Path("config/"), Headers)
+    _user_storage = YAMLModelStorage(Path("config/"), User)
+    _track_storage = YAMLModelStorage(Path("resources/default_tracks/"), Track)
 
     @service_wrapper("加载用户配置")
     def get_user_or_default(self) -> User:
@@ -95,10 +93,10 @@ class Service:
     def _load_track(self, route: Route, user: User) -> Track:
         if user.custom_track_path == "":
             logging.warning(f"未启用自定义轨迹, 将使用默认的轨迹文件")
-            track = self._track_storage.set_file_dir(self._default_tracks_path).load(route.route_name)
+            track = self._track_storage.load(route.route_name)
         else:
             track_path = Path(user.custom_track_path)
-            track = self._track_storage.set_file_dir(track_path.parent).load(track_path.name.rstrip(".yaml"))
+            track = self._track_storage.with_file_dir(track_path.parent).load(track_path.name.rstrip(".yaml"))
         return track
 
     @staticmethod

@@ -36,9 +36,5 @@ class YAMLModelStorage(Generic[T]):
                 msg = f"保存数据模型到 '{file_path}' 失败"
                 raise ModelStorageError(file_path, msg) from e
 
-    def set_file_dir(self, dir_path: Path) -> "YAMLModelStorage":
-        self._file_dir = dir_path
-        return self
-
-    def get_file_dir(self) -> Path:
-        return self._file_dir
+    def with_file_dir(self, file_dir: Path) -> "YAMLModelStorage[T]":
+        return YAMLModelStorage(file_dir, self._model_class)
