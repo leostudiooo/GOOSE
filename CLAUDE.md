@@ -38,6 +38,36 @@ pytest tests/test_filename.py
 pytest -v
 ```
 
+### Code Quality & Linting
+```bash
+# Install linting tools (if not already installed)
+pip install ruff black isort
+
+# Check code with Ruff
+ruff check .
+
+# Auto-fix safe issues
+ruff check --fix .
+
+# Check formatting with Black
+black --check .
+
+# Auto-format code
+black .
+
+# Check import sorting
+isort --check-only .
+
+# Auto-sort imports
+isort .
+```
+
+**Important**: All PRs must pass the linting workflow. The project follows these conventions:
+- Line length: 100 characters
+- Indentation: 4 spaces (no tabs)
+- mixedCase variable names are allowed (existing API contract)
+- PascalCase module names are allowed (existing file structure)
+
 ## Architecture Overview
 
 The codebase follows a layered architecture pattern:

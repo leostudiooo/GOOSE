@@ -195,6 +195,42 @@ custom_track:
 
 期待你的参与！
 
+### 开发指南
+
+#### 运行测试
+```sh
+pytest
+```
+
+#### 代码质量检查
+
+在提交 PR 之前，请确保代码通过所有 linting 检查：
+
+```sh
+# 安装 linting 工具
+pip install ruff black isort
+
+# 检查代码
+ruff check .
+
+# 自动修复问题
+ruff check --fix .
+
+# 格式化代码
+black .
+
+# 排序 imports
+isort .
+```
+
+**代码风格规范**：
+- 行长度：100 字符
+- 缩进：4 个空格（禁止使用 Tab）
+- 允许 mixedCase 变量名（现有 API 约定）
+- 允许 PascalCase 模块名（现有文件结构）
+
+所有 PR 必须通过 GitHub Actions 的 linting 检查才能合并。
+
 ## 📜 声明
 
 本项目遵循 [GPLv3 许可](LICENSE)。这主要意味着以下几点：
