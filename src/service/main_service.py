@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Callable
 
 from src.infrastructure import APIClient, YAMLModelStorage
-from src.infrastructure.exceptions import ServiceError
+from src.infrastructure.exceptions import ServiceError, AppError
 from src.model import Headers, RouteGroup, Track, User
 from src.model.record import Record
 
@@ -37,7 +37,7 @@ class Service:
         """从用户配置文件读取用户信息"""
         try:
             return self._user_storage.load("user")
-        except:
+        except AppError:
             logging.warning("无法加载用户配置, 将使用默认的用户配置")
             return User.get_default()
 
@@ -97,7 +97,7 @@ class Service:
             track = self._track_storage.load(route_name)
         else:
             track_path = Path(custom_track_path)
-            track = self._track_storage.with_file_dir(track_path.parent).load(track_path.name.rstrip(".yaml"))
+            track = self._track_storage.with_file_dir(track_path.parent).load(track_path.stem)
         return track
 
     @staticmethod

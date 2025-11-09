@@ -2,7 +2,6 @@ from collections import deque
 import logging
 from typing import List, Optional, Deque
 
-from rich.logging import RichHandler
 
 
 class LogStore:

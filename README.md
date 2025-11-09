@@ -170,8 +170,8 @@ custom_track:
 
 - `token`：需要在小程序中获取。为防止滥用，请自行寻找获取方法。
 - `date_time`：锻炼时间，格式为 `YYYY-MM-DD HH:MM:SS`，创建时为示例时间，可在 TUI 中使用“现在”按钮获取当前时间。
-- `start_image`：开始锻炼时的照片路径。
-- `finish_image`：结束锻炼时的照片路径。
+- `start_image`：开始锻炼时的图片路径。
+- `finish_image`：结束锻炼时的图片路径。
 - `route`：锻炼的路线名称，默认为“梅园田径场”，可在 TUI 中选择，`config/route_group.yaml` 中有所有可选路线。
 - `custom_track`：自定义轨迹，禁用时使用路线默认轨迹。`enable` 为 `true` 时，`file_path` 为自定义轨迹文件路径，格式为 YAML，使用 [PRTS](https://github.com/leostudiooo/PRTS) 生成。`enable` 为 `false` 时，使用默认轨迹。
 

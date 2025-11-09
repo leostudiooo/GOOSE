@@ -37,8 +37,8 @@ class User(BaseModel):
             params = json.loads(decoded_token)
         except Exception as e:
             raise InvalidTokenError(self.token, "此token无法被解码") from e
-        if "userid" not in params:
-            raise InvalidTokenError(self.token, "此token中没有userid字段")
+        if TOKEN_USERID_FIELD not in params:
+            raise InvalidTokenError(self.token, f"此token中没有{TOKEN_USERID_FIELD}字段")
 
         return params
 
