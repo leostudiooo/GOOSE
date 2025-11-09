@@ -27,7 +27,7 @@ class YAMLModelStorage(Generic[T]):
             except ValidationError as e:
                 raise ModelValidationError(f"文件 '{file_path}' 验证不通过", e) from e
 
-    def save(self, name, model: T) -> None:
+    def save(self, name: str, model: T) -> None:
         file_path = self._file_dir / f"{name}.yaml"
         with open(file_path, "w", encoding="utf-8") as f:
             try:
