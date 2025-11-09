@@ -15,7 +15,7 @@ class YAMLModelStorage(Generic[T]):
         self._file_dir = file_dir
         self._model_class = model_class
 
-    def load(self, name) -> T:
+    def load(self, name: str) -> T:
         file_path = self._file_dir / f"{name}.yaml"
         with open(file_path, "r", encoding="utf-8") as f:
             try:
