@@ -17,8 +17,21 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
-from src.ui.tui.GOOSEApp import GOOSEApp
+import sys
 
 if __name__ == "__main__":
-    app = GOOSEApp()
-    app.run()
+	# Check if running in CLI mode (any command-line arguments provided)
+	if len(sys.argv) > 1:
+		# CLI mode - only import CLI dependencies
+		from src.ui.cli.handler import CLIHandler, setup_cli_logging
+		
+		setup_cli_logging()
+		cli = CLIHandler()
+		exit_code = cli.run()
+		sys.exit(exit_code)
+	else:
+		# TUI mode - only import TUI dependencies
+		from src.ui.tui.GOOSEApp import GOOSEApp
+		
+		app = GOOSEApp()
+		app.run()
