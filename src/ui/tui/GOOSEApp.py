@@ -1,22 +1,22 @@
-from pathlib import Path
 import logging
+from pathlib import Path
 
 from textual.app import App
 from textual.binding import Binding
-from textual.widgets import Header, Footer
+from textual.widgets import Footer, Header
 
 from ...service.main_service import Service
-
-from .UserConfigPanel import UserConfigPanel
+from .AboutScreen import AboutScreen
 from .ActionPanel import ActionPanel
+from .LogManager import setup_logging
 from .LogViewer import LogViewer
 from .NotificationManager import NotificationManager
-from .LogManager import LogStore, setup_logging
-from .AboutScreen import AboutScreen
+from .UserConfigPanel import UserConfigPanel
+
 
 class GOOSEApp(App):
     """GOOSE 配置管理与上传应用"""
-    
+
     TITLE = "GOOSE 🪿"
     BINDINGS = [
         Binding("q", "quit", "退出"),
@@ -26,7 +26,7 @@ class GOOSEApp(App):
         Binding("l", "toggle_logs", "显示日志"),
         Binding("a", "show_about", "关于"),
     ]
-    
+
     # 添加 CSS 样式
     CSS = """
     #action_panel {
@@ -167,27 +167,27 @@ class GOOSEApp(App):
         margin-left: 1;
     }
     """
-    
+
     def __init__(self):
         # 创建通知管理器
         self.notification_mgr = NotificationManager()
-        
+
         # 设置日志和通知系统
         self.log_store = setup_logging(notification_handler=self.notification_mgr)
-        
+
         super().__init__()
-        
+
         # 初始化业务服务
         self.service = Service()
-        
+
         # 设置通知管理器的app引用
         self.notification_mgr.set_app(self)
-        
+
         # 添加一些初始日志
         logging.info("GOOSE 应用已启动")
         logging.info(f"配置目录: {Path('config/').absolute()}")
         logging.info(f"默认轨迹目录: {Path('resources/default_tracks/').absolute()}")
-    
+
     def compose(self):
         """创建应用布局"""
         yield Header()
@@ -195,7 +195,7 @@ class GOOSEApp(App):
         yield ActionPanel()
         yield Footer()
         yield LogViewer(self.log_store)
-    
+
     def action_save(self) -> None:
         """保存当前配置"""
         panel = self.query_one(UserConfigPanel)
@@ -203,27 +203,28 @@ class GOOSEApp(App):
             # 直接调用用户面板的方法
             panel.save_user_config()
             logging.info("用户配置已保存")
-    
+
     def action_validate(self) -> None:
         """验证配置"""
         self.query_one(ActionPanel).validate_config()
-    
+
     def action_upload(self) -> None:
         """上传记录"""
         self.query_one(ActionPanel).upload_record()
-    
+
     def action_toggle_logs(self) -> None:
         """切换日志查看器的显示状态"""
         log_viewer = self.query_one(LogViewer)
         log_viewer.toggle()
-    
+
     def action_show_about(self) -> None:
         """显示关于页面"""
         self.push_screen(AboutScreen())
-    
+
     def get_active_panel(self):
         """获取当前活动的配置面板"""
         return self.query_one(UserConfigPanel)
+
 
 if __name__ == "__main__":
     app = GOOSEApp()

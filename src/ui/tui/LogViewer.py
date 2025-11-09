@@ -1,13 +1,14 @@
 from textual.app import ComposeResult
 from textual.containers import Container, ScrollableContainer
-from textual.widgets import Button, Label, Static
 from textual.reactive import reactive
+from textual.widgets import Button, Label, Static
 
 from .LogManager import LogStore
 
+
 class LogViewer(Container):
     """日志查看器组件"""
-    
+
     DEFAULT_CSS = """
     LogViewer {
         background: $surface-darken-1;
@@ -52,28 +53,28 @@ class LogViewer(Container):
         width: 100%;
     }
     """
-    
+
     is_visible = reactive(False)
-    
+
     def __init__(self, log_store: LogStore, id="log_viewer"):
         super().__init__(id=id)
         self.log_store = log_store
-        
+
     def compose(self) -> ComposeResult:
         """创建日志查看器的布局"""
         with Container(id="log_header"):
             yield Label("日志查看器", id="log_title")
             yield Button("关闭", id="close_button", variant="error")
-        
+
         with ScrollableContainer(id="log_container"):
             yield Static("", id="log_content", markup=False)
-        
+
         yield Button("刷新日志", id="refresh_button", variant="primary")
-    
+
     def on_mount(self) -> None:
         """组件挂载时刷新日志"""
         self.refresh_logs()
-    
+
     def toggle(self) -> None:
         """切换日志查看器的可见性"""
         self.is_visible = not self.is_visible
@@ -82,24 +83,24 @@ class LogViewer(Container):
             self.refresh_logs()
         else:
             self.remove_class("visible")
-    
+
     def refresh_logs(self) -> None:
         """刷新日志内容"""
         log_content = self.query_one("#log_content")
         log_container = self.query_one("#log_container")
-        
+
         # 合并所有日志条目并显示
         logs = self.log_store.get_logs()
         log_text = "\n".join(logs)
         log_content.update(log_text if log_text else "暂无日志记录")
-        
+
         # 自动滚动到最新日志
         log_container.scroll_end(animate=True)
-    
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """处理按钮点击事件"""
         button_id = event.button.id
-        
+
         if button_id == "close_button":
             self.toggle()
         elif button_id == "refresh_button":

@@ -39,7 +39,9 @@ class Record:
             "studentId": self.user.student_id,
         }
 
-    def get_finish_record(self, start_record: dict[str, Any], finish_image_url: str, record_id: str) -> dict[str, Any]:
+    def get_finish_record(
+        self, start_record: dict[str, Any], finish_image_url: str, record_id: str
+    ) -> dict[str, Any]:
         distance_km = self.track.get_distance_km()
         duration_sec = self.track.get_duration_sec()
         pace_sec = 0 if distance_km == 0 else int(round(duration_sec / distance_km))

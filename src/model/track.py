@@ -50,7 +50,9 @@ class TrackPoint(BaseModel):
         rad_lat2 = math.radians(other.lat)
         l1 = rad_lat1 - rad_lat2
         l2 = math.radians(self.lng) - math.radians(other.lng)
-        haversine = math.pow(math.sin(l1 / 2), 2) + math.cos(rad_lat1) * math.cos(rad_lat2) * math.pow(math.sin(l2 / 2), 2)
+        haversine = math.pow(math.sin(l1 / 2), 2) + math.cos(rad_lat1) * math.cos(
+            rad_lat2
+        ) * math.pow(math.sin(l2 / 2), 2)
         angular_distance = 2 * math.asin(math.sqrt(haversine))
         d = angular_distance * EARTH_RADIUS_KM
         return d

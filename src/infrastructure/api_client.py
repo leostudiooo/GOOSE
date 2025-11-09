@@ -34,7 +34,7 @@ from src.infrastructure.constants import (
     REQUEST_MAX_DELAY_SEC,
     REQUEST_MIN_DELAY_SEC,
 )
-from src.infrastructure.exceptions import APIClientError, APIResponseError, AppError
+from src.infrastructure.exceptions import APIClientError, APIResponseError
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)  # 忽略SSL警告
 urllib3.disable_warnings(UserWarning)  # 忽略用户警告
@@ -172,7 +172,9 @@ class APIClient:
         full_url = f"{self._base_url}{url}"
         logging.debug(f"正在向 '{full_url}' 发送 {method} 请求")
 
-        time.sleep(random.uniform(REQUEST_MIN_DELAY_SEC, REQUEST_MAX_DELAY_SEC))  # 添加随机延迟, 避免发送请求过快
+        time.sleep(
+            random.uniform(REQUEST_MIN_DELAY_SEC, REQUEST_MAX_DELAY_SEC)
+        )  # 添加随机延迟, 避免发送请求过快
 
         response = self._session.request(method, full_url, **kwargs)
         logging.debug(f"来自 '{full_url}' 的响应状态码为 {response.status_code}")

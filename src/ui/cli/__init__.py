@@ -5,4 +5,4 @@ CLI (Command Line Interface) 模块
 
 from .handler import CLIHandler, setup_cli_logging
 
-__all__ = ['CLIHandler', 'setup_cli_logging']
+__all__ = ["CLIHandler", "setup_cli_logging"]

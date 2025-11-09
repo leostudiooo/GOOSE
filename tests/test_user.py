@@ -6,7 +6,7 @@ from datetime import datetime
 from pydantic import ValidationError
 
 from src.infrastructure.exceptions import InvalidTokenError
-from src.model.user import User, CustomTrack
+from src.model.user import CustomTrack, User
 
 
 class TestUserInitialization(unittest.TestCase):
@@ -55,28 +55,26 @@ class TestTokenValidator(unittest.TestCase):
             ).decode_token()
         self.assertIn("无法被解码", str(cm.exception))
 
-    def test_token_with_base64url_characters(self):                                                                   
-        """测试带有base64url特殊字符的token"""                                                                        
-        payload = (                                                                                                   
-            base64.urlsafe_b64encode('{"name": "灵感菇", "userid": "123"}'.encode())                                  
-            .decode()                                                                                                 
-            .rstrip("=")                                                                                              
-        )                                                                                                             
-        valid_data = {                                                                                                
-            "token": f"header.{payload}.sign",                                                                        
-            "date_time": datetime.now().isoformat(),                                                                  
-            "start_image": "start.jpg",                                                                               
-            "finish_image": "finish.jpg",                                                                             
-            "route": "route1",                                                                                        
-        }                                                                                                             
-        user = User.model_validate(valid_data)                                                                        
-        self.assertEqual(user.student_id, "123") 
+    def test_token_with_base64url_characters(self):
+        """测试带有base64url特殊字符的token"""
+        payload = (
+            base64.urlsafe_b64encode('{"name": "灵感菇", "userid": "123"}'.encode())
+            .decode()
+            .rstrip("=")
+        )
+        valid_data = {
+            "token": f"header.{payload}.sign",
+            "date_time": datetime.now().isoformat(),
+            "start_image": "start.jpg",
+            "finish_image": "finish.jpg",
+            "route": "route1",
+        }
+        user = User.model_validate(valid_data)
+        self.assertEqual(user.student_id, "123")
 
     def test_missing_userid(self):
         """测试token中缺少userid字段"""
-        payload = (
-            base64.b64encode(json.dumps({"name": "test"}).encode()).decode().rstrip("=")
-        )
+        payload = base64.b64encode(json.dumps({"name": "test"}).encode()).decode().rstrip("=")
         token = f"header.{payload}.signature"
 
         with self.assertRaises(InvalidTokenError) as cm:
@@ -91,11 +89,7 @@ class TestTokenValidator(unittest.TestCase):
 
     def test_valid_token(self):
         """测试有效token解析"""
-        payload = (
-            base64.b64encode(json.dumps({"userid": "456"}).encode())
-            .decode()
-            .rstrip("=")
-        )
+        payload = base64.b64encode(json.dumps({"userid": "456"}).encode()).decode().rstrip("=")
         token = f"header.{payload}.signature"
 
         user = User(
@@ -126,11 +120,7 @@ class TestCustomTrackValidator(unittest.TestCase):
 class TestStudentIdProperty(unittest.TestCase):
     def test_student_id_extraction(self):
         """测试从token中正确提取userid"""
-        payload = (
-            base64.b64encode(json.dumps({"userid": "789"}).encode())
-            .decode()
-            .rstrip("=")
-        )
+        payload = base64.b64encode(json.dumps({"userid": "789"}).encode()).decode().rstrip("=")
         token = f"header.{payload}.signature"
 
         user = User(
@@ -231,9 +221,7 @@ class TestModelValidate(unittest.TestCase):
     def test_nested_token_validation(self):
         """测试嵌套的token验证逻辑"""
         # 有效负载缺少userid
-        payload = (
-            base64.b64encode(json.dumps({"group": "A"}).encode()).decode().rstrip("=")
-        )
+        payload = base64.b64encode(json.dumps({"group": "A"}).encode()).decode().rstrip("=")
         invalid_data = {
             "token": f"header.{payload}.sign",
             "date_time": datetime.now().isoformat(),

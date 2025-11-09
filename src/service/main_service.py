@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Callable
 
 from src.infrastructure import APIClient, YAMLModelStorage
-from src.infrastructure.exceptions import ServiceError, AppError
+from src.infrastructure.exceptions import AppError, ServiceError
 from src.model import Headers, RouteGroup, Track, User
 from src.model.record import Record
 
@@ -93,7 +93,7 @@ class Service:
 
     def _get_track(self, route_name: str, custom_track_path: str) -> Track:
         if custom_track_path == "":
-            logging.warning(f"未启用自定义轨迹, 将使用默认的轨迹文件")
+            logging.warning("未启用自定义轨迹, 将使用默认的轨迹文件")
             track = self._track_storage.load(route_name)
         else:
             track_path = Path(custom_track_path)
@@ -102,7 +102,9 @@ class Service:
 
     @staticmethod
     def _construct_client_and_check_tenant_token(user: User, headers: Headers):
-        client = APIClient(headers.user_agent, headers.miniapp_version, headers.referer, headers.tenant, user.token)
+        client = APIClient(
+            headers.user_agent, headers.miniapp_version, headers.referer, headers.tenant, user.token
+        )
         client.check_tenant()
         client.check_token()
 

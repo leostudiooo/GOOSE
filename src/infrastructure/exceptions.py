@@ -86,7 +86,9 @@ class RouteNotFoundError(AppError):
         """
         valid_route_names = [f"'{route_name}'" for route_name in self.valid_route_names]
         valid_route_names = ", ".join(valid_route_names)
-        return f"{self._desc_with_type()}, " + (f"可用的路线包括 {valid_route_names}" if valid_route_names != "" else "无任何可用路线")
+        return f"{self._desc_with_type()}, " + (
+            f"可用的路线包括 {valid_route_names}" if valid_route_names != "" else "无任何可用路线"
+        )
 
 
 class APIResponseError(AppError):
@@ -179,6 +181,7 @@ class ModelStorageError(AppError):
 
     当模型文件保存或加载过程中发生错误时抛出，包含相关文件路径和错误信息。
     """
+
     def __init__(self, file_path: Path, msg: str):
         super().__init__(msg)
         self.file_path = file_path

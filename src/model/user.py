@@ -33,7 +33,9 @@ class User(BaseModel):
             msg = f"token 必须包含 {TOKEN_PARTS_COUNT} 个部分, 形如 'part1.part2.part3'"
             raise InvalidTokenError(self.token, msg)
         try:
-            decoded_token = base64.urlsafe_b64decode(splits[1] + "=" * (-len(splits[1]) % 4))  # 处理 base64 URL 编码
+            decoded_token = base64.urlsafe_b64decode(
+                splits[1] + "=" * (-len(splits[1]) % 4)
+            )  # 处理 base64 URL 编码
             params = json.loads(decoded_token)
         except Exception as e:
             raise InvalidTokenError(self.token, "此token无法被解码") from e
