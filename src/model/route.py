@@ -4,7 +4,7 @@ from pydantic import BaseModel
 class Route(BaseModel):
     """
     运动路线信息模型
-    
+
     包含路线的基本信息、规则和时间限制等。
     """
 

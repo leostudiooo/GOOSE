@@ -20,5 +20,5 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 from src.ui.tui.GOOSEApp import GOOSEApp
 
 if __name__ == "__main__":
-	app = GOOSEApp()
-	app.run()
+    app = GOOSEApp()
+    app.run()

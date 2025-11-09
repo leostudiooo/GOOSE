@@ -76,9 +76,7 @@ GOOSE 的图标由 GOOSE 五个字母变形而来，绘制了一只张开翅膀�
 │   └── default_tracks/
 ├── src/
 │   ├── infrastructure/
-│   │   └── model_storage/
 │   ├── model/
-│   │   └── track/
 │   ├── service/
 │   └── ui/
 │       ├── cli/
@@ -148,7 +146,7 @@ GOOSE 的图标由 GOOSE 五个字母变形而来，绘制了一只张开翅膀�
 
 ### 配置
 
-运行后会自动创建 `config/user.yaml` 文件，你也可以直接在 TUI 中进行配置。
+你可以直接在 TUI 中进行配置，保存配置后会自动创建 `config/user.yaml` 文件。
 
 > **⚠️ 注意**
 > 
@@ -156,7 +154,7 @@ GOOSE 的图标由 GOOSE 五个字母变形而来，绘制了一只张开翅膀�
 
 ```yaml
 # 用户登录信息
-token: valid.eyJ1c2VyaWQiOiAiMTIzIn0.token
+token: your.token.here
 
 # 用户偏好配置
 date_time: 2025-03-19 21:01:50
@@ -167,21 +165,21 @@ route: 梅园田径场
 # 使用自定义轨迹，可从 PRTS 生成；禁用时使用路线默认轨迹
 custom_track: 
   enable: false
-  file_path: "resources/my_tracks/track.json"
+  file_path: "path/to/custom/track.yaml"
 ```
 
 - `token`：需要在小程序中获取。为防止滥用，请自行寻找获取方法。
 - `date_time`：锻炼时间，格式为 `YYYY-MM-DD HH:MM:SS`，创建时为示例时间，可在 TUI 中使用“现在”按钮获取当前时间。
 - `start_image`：开始锻炼时的图片路径。
 - `finish_image`：结束锻炼时的图片路径。
-- `route`：锻炼的路线名称，默认为“梅园田径场”，可在 TUI 中选择，`config/route_info.yaml` 中有所有可选路线。
-- `custom_track`：自定义轨迹，禁用时使用路线默认轨迹。`enable` 为 `true` 时，`file_path` 为自定义轨迹文件路径，格式为 JSON，使用 [PRTS](https://github.com/leostudiooo/PRTS) 生成。`enable` 为 `false` 时，使用默认轨迹。
+- `route`：锻炼的路线名称，默认为“梅园田径场”，可在 TUI 中选择，`config/route_group.yaml` 中有所有可选路线。
+- `custom_track`：自定义轨迹，禁用时使用路线默认轨迹。`enable` 为 `true` 时，`file_path` 为自定义轨迹文件路径，格式为 YAML，使用 [PRTS](https://github.com/leostudiooo/PRTS) 生成。`enable` 为 `false` 时，使用默认轨迹。
 
 > **⚠️ 注意**
 >
-> 为了降低被服务器检测到重复轨迹的风险，您应当在 PRTS 创建独一无二的自定义轨迹文件，并在 GOOSE 中开启自定义轨迹选项，选择生成的文件使用。所需规则文件（即电子围栏边界）在 resource 目录下。
+> 为了降低被服务器检测到重复轨迹的风险，您应当在 PRTS 创建独一无二的自定义轨迹文件，并在 GOOSE 中开启自定义轨迹选项，选择生成的文件使用。所需规则文件（即电子围栏边界）在 `resources/boundaries/` 目录下。
 
-系统配置和路线信息在 `config/system.yaml` 和 `config/route_info.yaml` 中，普通用户无需修改。系统配置包括服务器地址、请求头等信息，路线信息包括所有可选路线的名称和默认轨迹文件路径。
+请求头配置和路线组信息在 `config/headers.yaml` 和 `config/route_group.yaml` 中，普通用户无需修改。
 
 ## 🛠️ 贡献
 

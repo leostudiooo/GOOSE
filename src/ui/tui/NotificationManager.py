@@ -43,6 +43,6 @@ class NotificationManager(logging.Handler):
                     message = str(exc_value)
                     
             # 调用app的notify方法发送通知
-            self.app.notify(message, severity=severity)
+            self.app.notify(message, severity=severity, markup=False)
         except Exception:
             self.handleError(record)

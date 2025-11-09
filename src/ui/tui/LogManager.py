@@ -2,6 +2,8 @@ from collections import deque
 import logging
 from typing import List, Optional, Deque
 
+
+
 class LogStore:
     """
     日志存储器，用于存储应用程序日志
@@ -49,8 +51,8 @@ class LogHandler(logging.Handler):
         """
         super().__init__()
         self.log_store = log_store
-        self.formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
-    
+        self.formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
     def emit(self, record: logging.LogRecord) -> None:
         """
         处理日志记录
@@ -64,7 +66,7 @@ class LogHandler(logging.Handler):
 
 def setup_logging(log_store: Optional[LogStore] = None, 
                   notification_handler: Optional[logging.Handler] = None,
-                  console: bool = True,
+                  console: bool = False,
                   level: int = logging.INFO) -> LogStore:
     """
     设置应用日志系统
@@ -100,8 +102,9 @@ def setup_logging(log_store: Optional[LogStore] = None,
     
     # 添加控制台处理器(如果需要)
     if console:
+        formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
         console_handler = logging.StreamHandler()
-        console_handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(message)s'))
+        console_handler.setFormatter(formatter)
         root_logger.addHandler(console_handler)
         
     return log_store
