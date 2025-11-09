@@ -4,6 +4,9 @@ from textual.app import ComposeResult
 
 import logging
 
+from src.infrastructure.exceptions import AppError
+
+
 class ActionPanel(Horizontal):
     """操作按钮面板"""
     
@@ -32,16 +35,18 @@ class ActionPanel(Horizontal):
             self.app.service.validate()
             logging.info("配置验证通过！")
             self.app.notify("配置验证通过！", severity="information")
+        except AppError as e:
+            logging.error(e.explain())
         except Exception as e:
             logging.error(f"配置验证失败: {e}")
     
     def upload_record(self) -> None:
         """上传记录"""
         try:
-            logging.info("开始上传记录...")
-            self.app.notify("正在上传记录...", severity="information")
             self.app.service.upload()
             logging.info("记录上传成功！")
-            self.app.notify("记录上传成功！", severity="success")
+            self.app.notify("记录上传成功！", severity="information")
+        except AppError as e:
+            logging.error(e.explain())
         except Exception as e:
             logging.error(f"上传记录失败: {e}")

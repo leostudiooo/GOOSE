@@ -24,11 +24,12 @@ class TestCLIIntegration(unittest.TestCase):
         
         if self.config_path.exists():
             shutil.copy(self.config_path, self.backup_path)
-        
-        # Ensure we have a clean config for testing
-        example_config = Path("config/user_example.yaml")
-        if example_config.exists():
-            shutil.copy(example_config, self.config_path)
+        else:
+            # Create a default user config for testing
+            from src.model.user import User
+            default_user = User.get_default()
+            with open(self.config_path, 'w', encoding='utf-8') as f:
+                yaml.safe_dump(default_user.model_dump(), f, allow_unicode=True)
     
     def tearDown(self):
         """Clean up test environment"""

@@ -11,6 +11,9 @@ from src.service.main_service import Service
 
 import logging
 
+from ...infrastructure.exceptions import AppError
+
+
 class UserConfigPanel(VerticalScroll):
     """用户配置编辑面板"""
     
@@ -18,7 +21,7 @@ class UserConfigPanel(VerticalScroll):
         super().__init__(id="user_config")
         self._user = None
         # 直接创建Service实例，不依赖app
-        self._service = Service(Path("config/"), Path("resources/default_tracks/"))
+        self._service = Service()
     
     def compose(self) -> ComposeResult:
         """创建用户配置编辑表单"""
@@ -44,7 +47,7 @@ class UserConfigPanel(VerticalScroll):
         """从配置文件加载用户配置"""
         try:
             # 使用本地service实例
-            user = self._service.get_user()
+            user = self._service.get_user_or_default()
             self._user = user
             
             # 填充表单
@@ -64,7 +67,9 @@ class UserConfigPanel(VerticalScroll):
             logging.info("用户配置已加载")
             if hasattr(self.app, 'notify'):
                 self.app.notify("用户配置已加载", severity="information")
-            
+
+        except AppError as e:
+            logging.error(e.explain())
         except Exception as e:
             logging.error(f"加载用户配置失败: {e}")
     
@@ -95,7 +100,9 @@ class UserConfigPanel(VerticalScroll):
             logging.info("用户配置已保存")
             if hasattr(self.app, 'notify'):
                 self.app.notify("用户配置已保存", severity="information")
-                
+
+        except AppError as e:
+            logging.error(e.explain())
         except Exception as e:
             logging.error(f"保存用户配置失败: {e}")
 

@@ -66,7 +66,7 @@ class LogViewer(Container):
             yield Button("关闭", id="close_button", variant="error")
         
         with ScrollableContainer(id="log_container"):
-            yield Static("", id="log_content")
+            yield Static("", id="log_content", markup=False)
         
         yield Button("刷新日志", id="refresh_button", variant="primary")
     
