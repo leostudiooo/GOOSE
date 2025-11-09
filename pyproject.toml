@@ -1,6 +1,6 @@
 [project]
 name = "goose"
-version = "0.1.2"
+version = "0.1.4"
 requires-python = ">=3.9"
 dependencies = [
     "Brotli==1.1.0",
@@ -19,3 +19,49 @@ dependencies = [
     "textual==3.2.0",
     "tomli==2.2.1",
 ]
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | __pycache__
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+skip_gitignore = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]  # unused imports in __init__.py are ok
