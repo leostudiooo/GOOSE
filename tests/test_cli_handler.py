@@ -8,7 +8,7 @@ Tests for CLI handler functionality
 import unittest
 from datetime import datetime
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch
 import tempfile
 import shutil
 
