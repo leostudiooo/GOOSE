@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from src.model import User
+from src.model.user import CustomTrack
 from src.service.main_service import Service
 
 
@@ -136,7 +137,6 @@ class CLIHandler:
                     # Get current custom_track or create new one
                     custom_track = user.custom_track
                     if isinstance(custom_track, str):
-                        from src.model.user import CustomTrack
                         custom_track = CustomTrack()
                     
                     # Update the nested field

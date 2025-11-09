@@ -8,7 +8,6 @@ Tests the complete workflow as described in the issue
 
 import unittest
 import subprocess
-import tempfile
 import shutil
 import yaml
 from pathlib import Path
@@ -19,18 +18,26 @@ class TestCLIIntegration(unittest.TestCase):
     
     def setUp(self):
         """Set up test environment"""
-        self.temp_dir = Path(tempfile.mkdtemp())
-        self.config_dir = self.temp_dir / "config"
-        self.config_dir.mkdir()
+        # Save the original config if it exists
+        self.config_path = Path("config/user.yaml")
+        self.backup_path = Path("config/user.yaml.backup")
         
-        # Copy example config
+        if self.config_path.exists():
+            shutil.copy(self.config_path, self.backup_path)
+        
+        # Ensure we have a clean config for testing
         example_config = Path("config/user_example.yaml")
         if example_config.exists():
-            shutil.copy(example_config, self.config_dir / "user.yaml")
+            shutil.copy(example_config, self.config_path)
     
     def tearDown(self):
         """Clean up test environment"""
-        shutil.rmtree(self.temp_dir, ignore_errors=True)
+        # Restore the original config
+        if self.backup_path.exists():
+            shutil.move(self.backup_path, self.config_path)
+        elif self.config_path.exists():
+            # If there was no backup, remove the test config
+            self.config_path.unlink()
     
     def test_issue_example_workflow(self):
         """
