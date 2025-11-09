@@ -174,6 +174,11 @@ class ModelValidationError(AppError):
 
 
 class ModelStorageError(AppError):
+    """
+    模型存储错误异常
+
+    当模型文件保存或加载过程中发生错误时抛出，包含相关文件路径和错误信息。
+    """
     def __init__(self, file_path: Path, msg: str):
         super().__init__(msg)
         self.file_path = file_path
