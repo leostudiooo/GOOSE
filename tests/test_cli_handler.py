@@ -7,10 +7,7 @@ Tests for CLI handler functionality
 
 import unittest
 from datetime import datetime
-from pathlib import Path
 from unittest.mock import patch
-import tempfile
-import shutil
 
 from src.ui.cli.handler import CLIHandler
 from src.model.user import User, CustomTrack
@@ -19,23 +16,10 @@ from src.model.user import User, CustomTrack
 class TestCLIHandler(unittest.TestCase):
     """Test cases for CLIHandler class"""
     
-    def setUp(self):
-        """Set up test fixtures"""
-        # Create temporary directories
-        self.temp_dir = tempfile.mkdtemp()
-        self.config_dir = Path(self.temp_dir) / "config"
-        self.tracks_dir = Path(self.temp_dir) / "tracks"
-        self.config_dir.mkdir()
-        self.tracks_dir.mkdir()
-        
-    def tearDown(self):
-        """Clean up test fixtures"""
-        shutil.rmtree(self.temp_dir, ignore_errors=True)
-    
     @patch('src.ui.cli.handler.Service')
     def test_parse_args_upload_flag(self, mock_service):
         """Test parsing --upload flag"""
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         args = handler.parse_args(['--upload'])
         
         self.assertTrue(args.upload)
@@ -45,7 +29,7 @@ class TestCLIHandler(unittest.TestCase):
     @patch('src.ui.cli.handler.Service')
     def test_parse_args_config_single(self, mock_service):
         """Test parsing single -c config"""
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         args = handler.parse_args(['-c', 'route=体育场'])
         
         self.assertEqual(args.configs, ['route=体育场'])
@@ -54,7 +38,7 @@ class TestCLIHandler(unittest.TestCase):
     @patch('src.ui.cli.handler.Service')
     def test_parse_args_config_multiple(self, mock_service):
         """Test parsing multiple -c configs"""
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         args = handler.parse_args([
             '-c', 'route=体育场',
             '-c', 'custom_track.enable=true',
@@ -68,7 +52,7 @@ class TestCLIHandler(unittest.TestCase):
     @patch('src.ui.cli.handler.Service')
     def test_parse_args_combined(self, mock_service):
         """Test parsing combined flags"""
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         args = handler.parse_args([
             '--upload',
             '-c', 'route=体育场',
@@ -81,7 +65,7 @@ class TestCLIHandler(unittest.TestCase):
     @patch('src.ui.cli.handler.Service')
     def test_parse_config_value_boolean_true(self, mock_service):
         """Test parsing boolean true values"""
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         
         self.assertTrue(handler.parse_config_value('true'))
         self.assertTrue(handler.parse_config_value('True'))
@@ -91,7 +75,7 @@ class TestCLIHandler(unittest.TestCase):
     @patch('src.ui.cli.handler.Service')
     def test_parse_config_value_boolean_false(self, mock_service):
         """Test parsing boolean false values"""
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         
         self.assertFalse(handler.parse_config_value('false'))
         self.assertFalse(handler.parse_config_value('False'))
@@ -101,7 +85,7 @@ class TestCLIHandler(unittest.TestCase):
     @patch('src.ui.cli.handler.Service')
     def test_parse_config_value_datetime_full(self, mock_service):
         """Test parsing full datetime format"""
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         
         result = handler.parse_config_value('2025-05-14 10:30:45')
         self.assertIsInstance(result, datetime)
@@ -115,7 +99,7 @@ class TestCLIHandler(unittest.TestCase):
     @patch('src.ui.cli.handler.Service')
     def test_parse_config_value_datetime_date_only(self, mock_service):
         """Test parsing date-only format"""
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         
         result = handler.parse_config_value('2025-05-14')
         self.assertIsInstance(result, datetime)
@@ -126,7 +110,7 @@ class TestCLIHandler(unittest.TestCase):
     @patch('src.ui.cli.handler.Service')
     def test_parse_config_value_string(self, mock_service):
         """Test parsing string values"""
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         
         self.assertEqual(handler.parse_config_value('体育场'), '体育场')
         self.assertEqual(handler.parse_config_value('"path/to/file"'), 'path/to/file')
@@ -144,9 +128,9 @@ class TestCLIHandler(unittest.TestCase):
             route='梅园田径场',
             custom_track=CustomTrack()
         )
-        mock_service_instance.get_user.return_value = mock_user
+        mock_service_instance.get_user_or_default.return_value = mock_user
         
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         result = handler.apply_config(['route=体育场'])
         
         self.assertEqual(result.route, '体育场')
@@ -163,9 +147,9 @@ class TestCLIHandler(unittest.TestCase):
             route='梅园田径场',
             custom_track=CustomTrack(enable=False, file_path='')
         )
-        mock_service_instance.get_user.return_value = mock_user
+        mock_service_instance.get_user_or_default.return_value = mock_user
         
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         result = handler.apply_config(['custom_track.enable=true'])
         
         self.assertIsInstance(result.custom_track, CustomTrack)
@@ -183,9 +167,9 @@ class TestCLIHandler(unittest.TestCase):
             route='梅园田径场',
             custom_track=CustomTrack()
         )
-        mock_service_instance.get_user.return_value = mock_user
+        mock_service_instance.get_user_or_default.return_value = mock_user
         
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         result = handler.apply_config(['custom_track.file_path=path/to/track.json'])
         
         self.assertIsInstance(result.custom_track, CustomTrack)
@@ -203,9 +187,9 @@ class TestCLIHandler(unittest.TestCase):
             route='梅园田径场',
             custom_track=CustomTrack()
         )
-        mock_service_instance.get_user.return_value = mock_user
+        mock_service_instance.get_user_or_default.return_value = mock_user
         
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         result = handler.apply_config([
             'route=体育场',
             'custom_track.enable=true',
@@ -228,9 +212,9 @@ class TestCLIHandler(unittest.TestCase):
             route='梅园田径场',
             custom_track=CustomTrack()
         )
-        mock_service_instance.get_user.return_value = mock_user
+        mock_service_instance.get_user_or_default.return_value = mock_user
         
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         result = handler.apply_config(['date_time=2025-05-14 10:30:45'])
         
         self.assertEqual(result.date_time.year, 2025)
@@ -249,9 +233,9 @@ class TestCLIHandler(unittest.TestCase):
             route='梅园田径场',
             custom_track=CustomTrack()
         )
-        mock_service_instance.get_user.return_value = mock_user
+        mock_service_instance.get_user_or_default.return_value = mock_user
         
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         exit_code = handler.run(['-c', 'route=体育场'])
         
         self.assertEqual(exit_code, 0)
@@ -263,7 +247,7 @@ class TestCLIHandler(unittest.TestCase):
         """Test running with validate flag"""
         mock_service_instance = mock_service.return_value
         
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         exit_code = handler.run(['--validate'])
         
         self.assertEqual(exit_code, 0)
@@ -274,7 +258,7 @@ class TestCLIHandler(unittest.TestCase):
         """Test running with upload flag"""
         mock_service_instance = mock_service.return_value
         
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         exit_code = handler.run(['--upload'])
         
         self.assertEqual(exit_code, 0)
@@ -292,9 +276,9 @@ class TestCLIHandler(unittest.TestCase):
             route='梅园田径场',
             custom_track=CustomTrack()
         )
-        mock_service_instance.get_user.return_value = mock_user
+        mock_service_instance.get_user_or_default.return_value = mock_user
         
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         exit_code = handler.run([
             '-c', 'route=体育场',
             '-c', 'custom_track.enable=true',
@@ -311,7 +295,7 @@ class TestCLIHandler(unittest.TestCase):
         mock_service_instance = mock_service.return_value
         mock_service_instance.upload.side_effect = Exception("Upload failed")
         
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         exit_code = handler.run(['--upload'])
         
         self.assertEqual(exit_code, 1)
@@ -328,9 +312,9 @@ class TestCLIHandler(unittest.TestCase):
             route='梅园田径场',
             custom_track=CustomTrack()
         )
-        mock_service_instance.get_user.return_value = mock_user
+        mock_service_instance.get_user_or_default.return_value = mock_user
         
-        handler = CLIHandler(self.config_dir, self.tracks_dir)
+        handler = CLIHandler()
         # Should not crash, just log warning
         result = handler.apply_config(['invalid_config'])
         

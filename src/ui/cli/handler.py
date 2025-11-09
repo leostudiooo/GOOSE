@@ -25,15 +25,11 @@ class CLIHandler:
     Handles parsing command-line arguments and executing corresponding actions.
     """
     
-    def __init__(self, config_dir: Path, default_tracks_dir: Path):
+    def __init__(self):
         """
         Initialize CLI handler.
-        
-        Args:
-            config_dir: Configuration file directory
-            default_tracks_dir: Default track files directory
         """
-        self.service = Service(config_dir, default_tracks_dir)
+        self.service = Service()
         self.logger = logging.getLogger(__name__)
     
     def parse_args(self, args=None):
@@ -117,7 +113,7 @@ class CLIHandler:
             Updated User object
         """
         # Load current user config
-        user = self.service.get_user()
+        user = self.service.get_user_or_default()
         
         for item in config_items:
             if '=' not in item:
@@ -134,10 +130,8 @@ class CLIHandler:
                 child_key = parts[1]
                 
                 if parent_key == 'custom_track':
-                    # Get current custom_track or create new one
+                    # Get current custom_track
                     custom_track = user.custom_track
-                    if isinstance(custom_track, str):
-                        custom_track = CustomTrack()
                     
                     # Update the nested field
                     if child_key == 'enable':
