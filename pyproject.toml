@@ -61,6 +61,11 @@ select = [
 ]
 ignore = [
     "E501",  # line too long (handled by black)
+    "N815",  # mixedCase variable names (existing API contract)
+    "N999",  # invalid module names (existing file structure)
+    "W293",  # blank line contains whitespace (in CSS strings)
+    "UP035", # typing.X is deprecated (compatibility)
+    "UP006", # Use X instead of typing.X (compatibility)
 ]
 
 [tool.ruff.lint.per-file-ignores]
