@@ -5,8 +5,8 @@ from typing import Callable
 
 from src.infrastructure import APIClient, YAMLModelStorage
 from src.infrastructure.exceptions import ServiceError
-from src.model import Exercise, Headers, Track, User, RouteGroup, Route
-from src.service.record_service import RecordService
+from src.model import Headers, RouteGroup, Track, User
+from src.model.record import Record
 
 
 def service_wrapper(desc: str):
@@ -53,10 +53,10 @@ class Service:
         return route_group.get_route_names()
 
     @service_wrapper("验证系统配置和用户配置")
-    def validate(self):
+    def validate(self) -> tuple[User, APIClient]:
         """
         验证系统配置文件和用户配置文件，并确保所有相关资源路径有效且数据合法, 同时验证 tenant 和 token.
-
+        验证后返回用户信息和 APIClient 实例
         任何一个环节验证失败将会抛出 AppError 的子异常.
         """
         user = self._user_storage.load("user")
@@ -67,38 +67,43 @@ class Service:
         open(user.start_image, "rb").close()
         open(user.finish_image, "rb").close()
 
-        client = self._construct_client(user, headers)
-        client.check_tenant()
-        client.check_token()
+        client = self._construct_client_and_check_tenant_token(user, headers)
+
+        return user, client
 
     @service_wrapper("上传运动记录")
     def upload(self):
         """
         加载并验证各种模型, 执行上传操作. 上传出现错误时将抛出 AppError 的子异常
         """
-        user = self._user_storage.load("user")
-        headers = self._headers_storage.load("headers")
-        route_group = self._route_group_storage.load("route_group")
+        user, client = self.validate()
+        route = self._route_group_storage.load("route_group").get_route(user.route)
+        track = self._get_track(route.route_name, user.custom_track_path)
+        record = Record(route, track, user)
 
-        user.decode_token()
+        with open(user.start_image, "rb") as f:
+            start_image_url = client.upload_start_image(f)
+        start_record = record.get_start_record(start_image_url)
+        record_id = client.upload_start_record(start_record)
 
-        route = route_group.get_route(user.route)
-        track = self._load_track(route, user)
-        exercise = Exercise.construct_from(user.date_time, track)
-        client = self._construct_client(user, headers)
+        with open(user.finish_image, "rb") as f:
+            finish_image_url = client.upload_finish_image(f)
+        finish_record = record.get_finish_record(start_record, finish_image_url, record_id)
+        client.upload_finish_record(finish_record)
 
-        record_service = RecordService(client, exercise, route, user)
-        record_service.upload()
-
-    def _load_track(self, route: Route, user: User) -> Track:
-        if user.custom_track_path == "":
+    def _get_track(self, route_name: str, custom_track_path: str) -> Track:
+        if custom_track_path == "":
             logging.warning(f"未启用自定义轨迹, 将使用默认的轨迹文件")
-            track = self._track_storage.load(route.route_name)
+            track = self._track_storage.load(route_name)
         else:
-            track_path = Path(user.custom_track_path)
+            track_path = Path(custom_track_path)
             track = self._track_storage.with_file_dir(track_path.parent).load(track_path.name.rstrip(".yaml"))
         return track
 
     @staticmethod
-    def _construct_client(user: User, headers: Headers):
-        return APIClient(headers.user_agent, headers.miniapp_version, headers.referer, headers.tenant, user.token)
+    def _construct_client_and_check_tenant_token(user: User, headers: Headers):
+        client = APIClient(headers.user_agent, headers.miniapp_version, headers.referer, headers.tenant, user.token)
+        client.check_tenant()
+        client.check_token()
+
+        return client
