@@ -103,7 +103,9 @@ class Service:
 
     @staticmethod
     def _construct_client_and_check_tenant_token(user: User, headers: Headers):
-        client = APIClient(headers.user_agent, headers.miniapp_version, headers.referer, headers.tenant, user.token)
+        client = APIClient(
+            headers.user_agent, headers.miniapp_version, headers.referer, headers.tenant, user.token
+        )
         client.check_tenant()
         client.check_token()
 
