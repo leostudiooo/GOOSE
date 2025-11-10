@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Generic, TypeVar
 
 import yaml
-from pydantic import ValidationError, BaseModel
+from pydantic import BaseModel, ValidationError
 from yaml import YAMLError
 
 from src.infrastructure.exceptions import ModelStorageError, ModelValidationError
@@ -20,7 +20,7 @@ class YAMLModelStorage(Generic[T]):
     def load(self, name: str) -> T:
         file_path = self._file_dir / f"{name}.yaml"
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 data = yaml.safe_load(f.read())
             return self._model_class.model_validate(data)
         except OSError as e:
@@ -50,7 +50,7 @@ class JSONModelStorage(Generic[T]):
     def load(self, name: str) -> T:
         file_path = self._file_dir / f"{name}.json"
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 data = json.load(f)
             return self._model_class.model_validate(data)
         except OSError as e:
