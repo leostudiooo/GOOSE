@@ -146,14 +146,26 @@ class APIClientError(AppError):
         super().__init__(f"{desc}时出现异常")
 
 
-class ModelValidationError(AppError):
+class ModelStorageError(AppError):
+    """
+    模型存储错误异常
+
+    当模型文件保存或加载过程中发生错误时抛出，包含相关文件路径和错误信息。
+    """
+
+    def __init__(self, file_path: Path, msg: str):
+        super().__init__(f"对于文件 '{file_path}' : {msg}")
+        self.file_path = file_path
+
+
+class ModelValidationError(ModelStorageError):
     """
     模型验证错误异常
 
     当Pydantic模型验证失败时抛出，包含详细的验证错误信息。
     """
 
-    def __init__(self, msg: str, error: ValidationError):
+    def __init__(self, file_path: Path, msg: str, error: ValidationError):
         """
         初始化模型验证错误异常
 
@@ -163,7 +175,7 @@ class ModelValidationError(AppError):
         """
         errors = [f"{''.join(map(str, error['loc']))}: {error['msg']}" for error in error.errors()]
         errors = "\n".join(errors)
-        super().__init__(f"{msg}:\n{errors}")
+        super().__init__(file_path, f"{msg}:\n{errors}")
 
     def explain(self) -> str:
         """
@@ -173,18 +185,6 @@ class ModelValidationError(AppError):
             完整的验证错误信息
         """
         return self._desc_with_type()
-
-
-class ModelStorageError(AppError):
-    """
-    模型存储错误异常
-
-    当模型文件保存或加载过程中发生错误时抛出，包含相关文件路径和错误信息。
-    """
-
-    def __init__(self, file_path: Path, msg: str):
-        super().__init__(msg)
-        self.file_path = file_path
 
 
 class InvalidTokenError(AppError):

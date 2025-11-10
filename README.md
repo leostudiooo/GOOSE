@@ -165,7 +165,7 @@ route: 梅园田径场
 # 使用自定义轨迹，可从 PRTS 生成；禁用时使用路线默认轨迹
 custom_track: 
   enable: false
-  file_path: "path/to/custom/track.yaml"
+  file_path: "path/to/custom/track.json"
 ```
 
 - `token`：需要在小程序中获取。为防止滥用，请自行寻找获取方法。
@@ -173,7 +173,7 @@ custom_track:
 - `start_image`：开始锻炼时的图片路径。
 - `finish_image`：结束锻炼时的图片路径。
 - `route`：锻炼的路线名称，默认为“梅园田径场”，可在 TUI 中选择，`config/route_group.yaml` 中有所有可选路线。
-- `custom_track`：自定义轨迹，禁用时使用路线默认轨迹。`enable` 为 `true` 时，`file_path` 为自定义轨迹文件路径，格式为 YAML，使用 [PRTS](https://github.com/leostudiooo/PRTS) 生成。`enable` 为 `false` 时，使用默认轨迹。
+- `custom_track`：自定义轨迹，禁用时使用路线默认轨迹。`enable` 为 `true` 时，`file_path` 为自定义轨迹文件路径，格式为 `JSON`，使用 [PRTS](https://github.com/leostudiooo/PRTS) 生成。`enable` 为 `false` 时，使用默认轨迹。
 
 > **⚠️ 注意**
 >
