@@ -3,10 +3,11 @@ import logging
 from pathlib import Path
 from typing import Callable
 
-from src.infrastructure import APIClient, YAMLModelStorage
+from src.infrastructure import APIClient, JSONModelStorage, YAMLModelStorage
 from src.infrastructure.exceptions import AppError, ServiceError
 from src.model import Headers, RouteGroup, Track, User
 from src.model.record import Record
+from src.model.route import Route
 
 
 def service_wrapper(desc: str):
@@ -30,7 +31,7 @@ class Service:
     _route_group_storage = YAMLModelStorage(Path("config/"), RouteGroup)
     _headers_storage = YAMLModelStorage(Path("config/"), Headers)
     _user_storage = YAMLModelStorage(Path("config/"), User)
-    _track_storage = YAMLModelStorage(Path("resources/default_tracks/"), Track)
+    _track_storage = JSONModelStorage(Path("resources/default_tracks/"), Track)
 
     @service_wrapper("加载用户配置")
     def get_user_or_default(self) -> User:
@@ -53,7 +54,7 @@ class Service:
         return route_group.get_route_names()
 
     @service_wrapper("验证系统配置和用户配置")
-    def validate(self) -> tuple[User, APIClient]:
+    def validate(self) -> tuple[User, APIClient, Route, Track]:
         """
         验证系统配置文件和用户配置文件，并确保所有相关资源路径有效且数据合法, 同时验证 tenant 和 token.
         验证后返回用户信息和 APIClient 实例
@@ -67,18 +68,18 @@ class Service:
         open(user.start_image, "rb").close()
         open(user.finish_image, "rb").close()
 
+        route = self._route_group_storage.load("route_group").get_route(user.route)
+        track = self._get_track(route.route_name, user.custom_track_path)
         client = self._construct_client_and_check_tenant_token(user, headers)
 
-        return user, client
+        return user, client, route, track
 
     @service_wrapper("上传运动记录")
     def upload(self):
         """
         加载并验证各种模型, 执行上传操作. 上传出现错误时将抛出 AppError 的子异常
         """
-        user, client = self.validate()
-        route = self._route_group_storage.load("route_group").get_route(user.route)
-        track = self._get_track(route.route_name, user.custom_track_path)
+        user, client, route, track = self.validate()
         record = Record(route, track, user)
 
         with open(user.start_image, "rb") as f:
@@ -102,9 +103,7 @@ class Service:
 
     @staticmethod
     def _construct_client_and_check_tenant_token(user: User, headers: Headers):
-        client = APIClient(
-            headers.user_agent, headers.miniapp_version, headers.referer, headers.tenant, user.token
-        )
+        client = APIClient(headers.user_agent, headers.miniapp_version, headers.referer, headers.tenant, user.token)
         client.check_tenant()
         client.check_token()
 
