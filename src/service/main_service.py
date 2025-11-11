@@ -1,7 +1,8 @@
+import asyncio
 import functools
 import logging
 from pathlib import Path
-from typing import Callable, Optional, Union
+from typing import Callable, Optional
 
 from src.infrastructure import APIClient, JSONModelStorage, YAMLModelStorage
 from src.infrastructure.exceptions import AppError, ServiceError
@@ -20,7 +21,15 @@ def service_wrapper(desc: str):
             except Exception as e:
                 raise ServiceError(desc) from e
 
-        return wrapper
+        @functools.wraps(func)
+        async def async_wrapper(*args, **kwargs):
+            logging.info(f"正在{desc}")
+            try:
+                return await func(*args, **kwargs)
+            except Exception as e:
+                raise ServiceError(desc) from e
+
+        return async_wrapper if asyncio.iscoroutinefunction(func) else wrapper
 
     return decorator
 
@@ -67,7 +76,7 @@ class Service:
         return route_group.get_route_names()
 
     @service_wrapper("验证系统配置和用户配置")
-    async def validate(self) -> tuple[User, APIClient, Route, Track]:
+    async def validate(self) -> tuple[User, Headers, Route, Track]:
         """
         验证系统配置文件和用户配置文件，并确保所有相关资源路径有效且数据合法, 同时验证 tenant 和 token.
         验证后返回用户信息和 APIClient 实例
@@ -83,27 +92,31 @@ class Service:
 
         route = self._route_group_storage.load("route_group").get_route(user.route)
         track = self._get_track(route.route_name, user.custom_track_path)
-        client = await self._construct_client_and_check_tenant_token(user, headers)
 
-        return user, client, route, track
+        async with self._construct_client(user, headers) as client:
+            await client.check_tenant()
+            await client.check_token()
+
+        return user, headers, route, track
 
     @service_wrapper("上传运动记录")
     async def upload(self):
         """
         加载并验证各种模型, 执行上传操作. 上传出现错误时将抛出 AppError 的子异常
         """
-        user, client, route, track = await self.validate()
+        user, headers, route, track = await self.validate()
         record = Record(route, track, user)
 
-        with open(user.start_image, "rb") as f:
-            start_image_url = await client.upload_start_image(f)
-        start_record = record.get_start_record(start_image_url)
-        record_id = await client.upload_start_record(start_record)
+        async with self._construct_client(user, headers) as client:
+            with open(user.start_image, "rb") as f:
+                start_image_url = await client.upload_start_image(f)
+            start_record = record.get_start_record(start_image_url)
+            record_id = await client.upload_start_record(start_record)
 
-        with open(user.finish_image, "rb") as f:
-            finish_image_url = await client.upload_finish_image(f)
-        finish_record = record.get_finish_record(start_record, finish_image_url, record_id)
-        await client.upload_finish_record(finish_record)
+            with open(user.finish_image, "rb") as f:
+                finish_image_url = await client.upload_finish_image(f)
+            finish_record = record.get_finish_record(start_record, finish_image_url, record_id)
+            await client.upload_finish_record(finish_record)
 
     def _get_track(self, route_name: str, custom_track_path: str) -> Track:
         if custom_track_path == "":
@@ -115,11 +128,7 @@ class Service:
         return track
 
     @staticmethod
-    async def _construct_client_and_check_tenant_token(user: User, headers: Headers):
-        client = APIClient(
+    def _construct_client(user: User, headers: Headers):
+        return APIClient(
             headers.user_agent, headers.miniapp_version, headers.referer, headers.tenant, user.token
         )
-        await client.check_tenant()
-        await client.check_token()
-
-        return client

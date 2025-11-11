@@ -37,9 +37,6 @@ from src.infrastructure.constants import (
 )
 from src.infrastructure.exceptions import APIClientError, APIResponseError
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)  # 忽略SSL警告
-urllib3.disable_warnings(UserWarning)  # 忽略用户警告
-
 
 def api_wrapper(desc: str):
     def decorator(func: Callable):
@@ -75,6 +72,12 @@ class APIClient:
             "Accept-Encoding": HEADER_ACCEPT_ENCODING,
             "Accept-Language": HEADER_ACCEPT_LANGUAGE,
         }
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self._session.close()
 
     @api_wrapper("检查tenant")
     async def check_tenant(self):
@@ -131,11 +134,19 @@ class APIClient:
         return result.get("data", "")
 
     async def _upload_image(self, image_buffer: BytesIO, api_path: str) -> dict[str, Any]:
+        form_data = aiohttp.FormData()
+        form_data.add_field(
+            "file",
+            image_buffer,
+            filename=IMAGE_FILENAME,
+            content_type=IMAGE_MIME_TYPE,
+        )
+
         response = await self._request(
             url=api_path,
             method="POST",
             headers=self._headers,
-            files={"file": (IMAGE_FILENAME, image_buffer, IMAGE_MIME_TYPE)},
+            data=form_data,
         )
 
         return await response.json()
