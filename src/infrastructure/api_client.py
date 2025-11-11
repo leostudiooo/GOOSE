@@ -3,12 +3,10 @@ import functools
 import json
 import logging
 import random
-import time
 from io import BytesIO
 from typing import Any, Callable
 
 import aiohttp
-import urllib3
 
 from src.infrastructure.constants import (
     API_BASE_URL,
