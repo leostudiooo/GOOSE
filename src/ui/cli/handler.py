@@ -107,7 +107,7 @@ class CLIHandler:
             Updated User object
         """
         # Load current user config
-        user = self.service.get_user_or_default()
+        user = self.service.get_user(User.get_demo())
 
         for item in config_items:
             if "=" not in item:

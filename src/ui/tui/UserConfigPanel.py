@@ -4,6 +4,7 @@ from textual.app import ComposeResult
 from textual.containers import VerticalScroll
 from textual.widgets import Button, Input, Label
 
+from src.model.user import User
 from src.service.main_service import Service
 
 from ...infrastructure.exceptions import AppError
@@ -45,7 +46,7 @@ class UserConfigPanel(VerticalScroll):
         """从配置文件加载用户配置"""
         try:
             # 使用本地service实例
-            user = self._service.get_user_or_default()
+            user = self._service.get_user(User.get_demo())
             self._user = user
 
             # 填充表单

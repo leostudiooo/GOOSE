@@ -130,7 +130,7 @@ class TestCLIHandler(unittest.TestCase):
             route="梅园田径场",
             custom_track=CustomTrack(),
         )
-        mock_service_instance.get_user_or_default.return_value = mock_user
+        mock_service_instance.get_user.return_value = mock_user
 
         handler = CLIHandler()
         result = handler.apply_config(["route=体育场"])
@@ -149,7 +149,7 @@ class TestCLIHandler(unittest.TestCase):
             route="梅园田径场",
             custom_track=CustomTrack(enable=False, file_path=""),
         )
-        mock_service_instance.get_user_or_default.return_value = mock_user
+        mock_service_instance.get_user.return_value = mock_user
 
         handler = CLIHandler()
         result = handler.apply_config(["custom_track.enable=true"])
@@ -169,7 +169,7 @@ class TestCLIHandler(unittest.TestCase):
             route="梅园田径场",
             custom_track=CustomTrack(),
         )
-        mock_service_instance.get_user_or_default.return_value = mock_user
+        mock_service_instance.get_user.return_value = mock_user
 
         handler = CLIHandler()
         result = handler.apply_config(["custom_track.file_path=path/to/track.json"])
@@ -189,7 +189,7 @@ class TestCLIHandler(unittest.TestCase):
             route="梅园田径场",
             custom_track=CustomTrack(),
         )
-        mock_service_instance.get_user_or_default.return_value = mock_user
+        mock_service_instance.get_user.return_value = mock_user
 
         handler = CLIHandler()
         result = handler.apply_config(
@@ -212,7 +212,7 @@ class TestCLIHandler(unittest.TestCase):
             route="梅园田径场",
             custom_track=CustomTrack(),
         )
-        mock_service_instance.get_user_or_default.return_value = mock_user
+        mock_service_instance.get_user.return_value = mock_user
 
         handler = CLIHandler()
         result = handler.apply_config(["date_time=2025-05-14 10:30:45"])
@@ -233,7 +233,7 @@ class TestCLIHandler(unittest.TestCase):
             route="梅园田径场",
             custom_track=CustomTrack(),
         )
-        mock_service_instance.get_user_or_default.return_value = mock_user
+        mock_service_instance.get_user.return_value = mock_user
 
         handler = CLIHandler()
         exit_code = handler.run(["-c", "route=体育场"])
@@ -276,7 +276,7 @@ class TestCLIHandler(unittest.TestCase):
             route="梅园田径场",
             custom_track=CustomTrack(),
         )
-        mock_service_instance.get_user_or_default.return_value = mock_user
+        mock_service_instance.get_user.return_value = mock_user
 
         handler = CLIHandler()
         exit_code = handler.run(
@@ -310,7 +310,7 @@ class TestCLIHandler(unittest.TestCase):
             route="梅园田径场",
             custom_track=CustomTrack(),
         )
-        mock_service_instance.get_user_or_default.return_value = mock_user
+        mock_service_instance.get_user.return_value = mock_user
 
         handler = CLIHandler()
         # Should not crash, just log warning

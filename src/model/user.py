@@ -57,7 +57,8 @@ class User(BaseModel):
         return self.custom_track.file_path if self.custom_track.enable else ""
 
     @classmethod
-    def get_default(cls) -> "User":
+    def get_demo(cls) -> "User":
+        """获取一个示例用户对象"""
         return cls(
             token="your.token.here",
             date_time=datetime(2025, 3, 19, 21, 1, 50),
