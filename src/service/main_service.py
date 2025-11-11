@@ -28,10 +28,21 @@ def service_wrapper(desc: str):
 class Service:
     """此类包含了各种供 CLI 和 GUI 使用的业务方法"""
 
-    _route_group_storage = YAMLModelStorage(Path("config/"), RouteGroup)
-    _headers_storage = YAMLModelStorage(Path("config/"), Headers)
-    _user_storage = YAMLModelStorage(Path("config/"), User)
-    _track_storage = JSONModelStorage(Path("resources/default_tracks/"), Track)
+    def __init__(
+        self,
+        route_group_storage: Optional[YAMLModelStorage[RouteGroup]] = None,
+        headers_storage: Optional[YAMLModelStorage[Headers]] = None,
+        user_storage: Optional[YAMLModelStorage[User]] = None,
+        track_storage: Optional[JSONModelStorage[Track]] = None,
+    ):
+        self._route_group_storage = route_group_storage or YAMLModelStorage(
+            Path("config/"), RouteGroup
+        )
+        self._headers_storage = headers_storage or YAMLModelStorage(Path("config/"), Headers)
+        self._user_storage = user_storage or YAMLModelStorage(Path("config/"), User)
+        self._track_storage = track_storage or JSONModelStorage(
+            Path("resources/default_tracks/"), Track
+        )
 
     @service_wrapper("加载用户配置")
     def get_user(self, default: Optional[User] = None) -> User:
