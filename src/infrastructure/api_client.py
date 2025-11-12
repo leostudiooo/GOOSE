@@ -54,7 +54,7 @@ def api_wrapper(desc: str):
 class APIClient:
     def __init__(self, ua: str, app_ver: str, referer: str, tenant: str, token: str):
         self._base_url = API_BASE_URL
-        self._session = aiohttp.ClientSession()
+        self._session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False))
         self._tenant = tenant
         self._headers = {
             "token": f"{HEADER_TOKEN_PREFIX}{token}",
