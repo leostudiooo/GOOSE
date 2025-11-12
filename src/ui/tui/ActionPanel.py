@@ -33,7 +33,7 @@ class ActionPanel(Horizontal):
         validate_btn = self.query_one("#validate", Button)
         upload_btn = self.query_one("#upload", Button)
         loading = self.query_one("#loading", LoadingIndicator)
-        
+
         validate_btn.disabled = disabled
         upload_btn.disabled = disabled
         loading.display = disabled
@@ -43,7 +43,7 @@ class ActionPanel(Horizontal):
         # 如果正在处理，忽略按钮点击
         if self._is_processing and event.button.id in ["validate", "upload"]:
             return
-            
+
         if event.button.id == "validate":
             await self.validate_config()
         elif event.button.id == "upload":
@@ -56,7 +56,7 @@ class ActionPanel(Horizontal):
         """验证配置"""
         self._is_processing = True
         self._set_buttons_disabled(True)
-        
+
         try:
             await self._service.validate()
             logging.info("配置验证通过！")
@@ -73,7 +73,7 @@ class ActionPanel(Horizontal):
         """上传记录"""
         self._is_processing = True
         self._set_buttons_disabled(True)
-        
+
         try:
             await self._service.upload()
             logging.info("记录上传成功！")
