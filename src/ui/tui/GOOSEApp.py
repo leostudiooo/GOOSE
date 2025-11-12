@@ -43,6 +43,11 @@ class GOOSEApp(App):
         min-width: 15;
     }
     
+    #loading {
+        margin: 0 1;
+        width: auto;
+    }
+    
     UserConfigPanel {
         height: 1fr;
         padding: 1 1;
