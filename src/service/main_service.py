@@ -79,7 +79,6 @@ class Service:
     async def validate(self) -> tuple[User, Headers, Route, Track]:
         """
         验证系统配置文件和用户配置文件，并确保所有相关资源路径有效且数据合法, 同时验证 tenant 和 token.
-        验证后返回用户信息和 APIClient 实例
         任何一个环节验证失败将会抛出 AppError 的子异常.
         """
         user = self._user_storage.load("user")

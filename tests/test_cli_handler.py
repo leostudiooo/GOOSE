@@ -3,7 +3,6 @@
 """
 Tests for CLI handler functionality
 """
-
 import unittest
 from datetime import datetime
 from unittest.mock import patch
@@ -245,7 +244,10 @@ class TestCLIHandler(unittest.TestCase):
     @patch("src.ui.cli.handler.Service")
     def test_run_validate(self, mock_service):
         """Test running with validate flag"""
+        async def func():
+            return None
         mock_service_instance = mock_service.return_value
+        mock_service_instance.validate.return_value = func()
 
         handler = CLIHandler()
         exit_code = handler.run(["--validate"])
@@ -256,7 +258,10 @@ class TestCLIHandler(unittest.TestCase):
     @patch("src.ui.cli.handler.Service")
     def test_run_upload(self, mock_service):
         """Test running with upload flag"""
+        async def func():
+            return None
         mock_service_instance = mock_service.return_value
+        mock_service_instance.upload.return_value = func()
 
         handler = CLIHandler()
         exit_code = handler.run(["--upload"])
@@ -267,6 +272,8 @@ class TestCLIHandler(unittest.TestCase):
     @patch("src.ui.cli.handler.Service")
     def test_run_config_and_upload(self, mock_service):
         """Test running with config and upload"""
+        async def func():
+            return None
         mock_service_instance = mock_service.return_value
         mock_user = User(
             token="test.eyJ1c2VyaWQiOiAiMTIzIn0.token",
@@ -277,6 +284,7 @@ class TestCLIHandler(unittest.TestCase):
             custom_track=CustomTrack(),
         )
         mock_service_instance.get_user.return_value = mock_user
+        mock_service_instance.upload.return_value = func()
 
         handler = CLIHandler()
         exit_code = handler.run(
