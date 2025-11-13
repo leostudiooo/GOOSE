@@ -3,6 +3,7 @@ name = "goose"
 version = "0.1.4"
 requires-python = ">=3.9"
 dependencies = [
+    "aiohttp>=3.13.2",
     "Brotli==1.1.0",
     "customtkinter==5.2.2",
     "httpx==0.28.1",
@@ -15,7 +16,6 @@ dependencies = [
     "pytest==6.2.5",
     "pyyaml==6.0.2",
     "questionary==2.1.0",
-    "requests==2.32.3",
     "ruff==0.14.4",
     "textual==3.2.0",
     "tomli==2.2.1",

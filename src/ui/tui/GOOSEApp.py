@@ -43,6 +43,11 @@ class GOOSEApp(App):
         min-width: 15;
     }
     
+    #loading {
+        margin: 0 1;
+        width: auto;
+    }
+    
     UserConfigPanel {
         height: 1fr;
         padding: 1 1;
@@ -204,13 +209,13 @@ class GOOSEApp(App):
             panel.save_user_config()
             logging.info("用户配置已保存")
 
-    def action_validate(self) -> None:
+    async def action_validate(self) -> None:
         """验证配置"""
-        self.query_one(ActionPanel).validate_config()
+        await self.query_one(ActionPanel).validate_config()
 
-    def action_upload(self) -> None:
+    async def action_upload(self) -> None:
         """上传记录"""
-        self.query_one(ActionPanel).upload_record()
+        await self.query_one(ActionPanel).upload_record()
 
     def action_toggle_logs(self) -> None:
         """切换日志查看器的显示状态"""

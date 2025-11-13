@@ -1,0 +1,106 @@
+name: Dependency Consistency Check
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  check-dependencies:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.9"
+    
+    - name: Install required tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install tomli packaging
+    
+    - name: Check dependency consistency
+      run: |
+        python -c "
+        import re
+        import sys
+        from pathlib import Path
+        from packaging.requirements import Requirement
+        from packaging.specifiers import SpecifierSet
+        
+        try:
+            import tomli
+        except ImportError:
+            import tomllib as tomli
+        
+        # Dev-only dependencies that should only be in pyproject.toml
+        DEV_ONLY_DEPS = {'ruff', 'black', 'isort'}
+        
+        # Read requirements.txt
+        requirements_txt = Path('requirements.txt').read_text()
+        req_deps = {}
+        for line in requirements_txt.strip().split('\n'):
+            line = line.strip()
+            if line and not line.startswith('#'):
+                try:
+                    req = Requirement(line)
+                    req_deps[req.name.lower()] = str(req.specifier) if req.specifier else ''
+                except Exception as e:
+                    print(f'Warning: Could not parse requirement: {line}')
+        
+        # Read pyproject.toml
+        pyproject = tomli.loads(Path('pyproject.toml').read_text())
+        toml_deps = {}
+        for dep in pyproject.get('project', {}).get('dependencies', []):
+            try:
+                req = Requirement(dep)
+                toml_deps[req.name.lower()] = str(req.specifier) if req.specifier else ''
+            except Exception as e:
+                print(f'Warning: Could not parse dependency: {dep}')
+        
+        # Check consistency
+        errors = []
+        
+        # Check if all non-dev deps in pyproject.toml are in requirements.txt
+        for name, spec in toml_deps.items():
+            if name in DEV_ONLY_DEPS:
+                continue  # Skip dev-only dependencies
+            if name not in req_deps:
+                errors.append(f'[ERROR] {name} is in pyproject.toml but missing from requirements.txt')
+            elif spec and req_deps[name] != spec:
+                errors.append(f'[WARN] {name}: version mismatch')
+                errors.append(f'   pyproject.toml: {name}{spec}')
+                errors.append(f'   requirements.txt: {name}{req_deps[name]}')
+        
+        # Check if all deps in requirements.txt are in pyproject.toml
+        for name, spec in req_deps.items():
+            if name not in toml_deps:
+                errors.append(f'[ERROR] {name} is in requirements.txt but missing from pyproject.toml')
+        
+        # Check that dev-only deps are NOT in requirements.txt
+        for name in DEV_ONLY_DEPS:
+            if name in req_deps:
+                errors.append(f'[ERROR] {name} is a dev-only dependency and should NOT be in requirements.txt')
+        
+        if errors:
+            print('\\n'.join(errors))
+            print(f'\\n[ERROR] Found {len(errors)} dependency consistency issue(s)')
+            sys.exit(1)
+        else:
+            print('[SUCCESS] All dependencies are consistent between requirements.txt and pyproject.toml')
+            print(f'\\nChecked {len(req_deps)} runtime dependencies:')
+            for name in sorted(req_deps.keys()):
+                spec = req_deps[name]
+                print(f'  [OK] {name}{spec}')
+            dev_deps = [name for name in toml_deps.keys() if name in DEV_ONLY_DEPS]
+            if dev_deps:
+                dev_deps_str = ', '.join(sorted(dev_deps))
+                print(f'\nDev-only dependencies (not in requirements.txt): {dev_deps_str}')
+        "

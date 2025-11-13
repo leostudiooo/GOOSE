@@ -28,7 +28,7 @@ class TestCLIIntegration(unittest.TestCase):
             # Create a default user config for testing
             from src.model.user import User
 
-            default_user = User.get_default()
+            default_user = User.get_demo()
             with open(self.config_path, "w", encoding="utf-8") as f:
                 yaml.safe_dump(default_user.model_dump(), f, allow_unicode=True)
 

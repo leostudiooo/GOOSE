@@ -6,6 +6,7 @@ Provides command-line interface for configuration and upload functionality.
 """
 
 import argparse
+import asyncio
 import logging
 import sys
 from datetime import datetime
@@ -107,7 +108,7 @@ class CLIHandler:
             Updated User object
         """
         # Load current user config
-        user = self.service.get_user_or_default()
+        user = self.service.get_user(User.get_demo())
 
         for item in config_items:
             if "=" not in item:
@@ -171,13 +172,13 @@ class CLIHandler:
             # Validate configuration if requested
             if parsed_args.validate:
                 self.logger.info("Validating configuration...")
-                self.service.validate()
+                asyncio.run(self.service.validate())
                 self.logger.info("Configuration is valid")
 
             # Upload if requested
             if parsed_args.upload:
                 self.logger.info("Starting upload...")
-                self.service.upload()
+                asyncio.run(self.service.upload())
                 self.logger.info("Upload completed successfully!")
                 return 0
 
