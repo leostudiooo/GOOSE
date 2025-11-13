@@ -101,5 +101,6 @@ jobs:
                 print(f'  [OK] {name}{spec}')
             dev_deps = [name for name in toml_deps.keys() if name in DEV_ONLY_DEPS]
             if dev_deps:
-                print(f"\nDev-only dependencies (not in requirements.txt): {', '.join(sorted(dev_deps))}")
+                dev_deps_str = ', '.join(sorted(dev_deps))
+                print(f'\nDev-only dependencies (not in requirements.txt): {dev_deps_str}')
         "
