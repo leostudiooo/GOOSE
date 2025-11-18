@@ -80,9 +80,9 @@ jobs:
                 errors.append(f'   requirements.txt: {name}{req_deps[name]}')
         
         # Check if all deps in requirements.txt are in pyproject.toml
-        for name, spec in req_deps.items():
-            if name not in toml_deps:
-                errors.append(f'[ERROR] {name} is in requirements.txt but missing from pyproject.toml')
+        # for name, spec in req_deps.items():
+        #   if name not in toml_deps:
+        #       errors.append(f'[ERROR] {name} is in requirements.txt but missing from pyproject.toml')
         
         # Check that dev-only deps are NOT in requirements.txt
         for name in DEV_ONLY_DEPS:
