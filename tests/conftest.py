@@ -1,4 +1,5 @@
 """Pytest configuration to add project root to Python path."""
+
 import sys
 from pathlib import Path
 
