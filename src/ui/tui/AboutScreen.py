@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from pathlib import Path
 
 import httpx
 from textual.app import ComposeResult
@@ -8,8 +9,34 @@ from textual.message import Message
 from textual.screen import ModalScreen
 from textual.widgets import Button, Label, LoadingIndicator, Static
 
+
+def get_version() -> str:
+    """Get version from package metadata or pyproject.toml."""
+    try:
+        # Best practice: Try to get from installed package metadata first
+        from importlib.metadata import version
+        return version("goose")
+    except (ImportError, Exception):
+        # Fallback: Read from pyproject.toml when running from source
+        try:
+            import tomli
+            # Find project root by looking for pyproject.toml
+            current_file = Path(__file__).resolve()
+            for parent in current_file.parents:
+                pyproject_path = parent / "pyproject.toml"
+                if pyproject_path.exists():
+                    with open(pyproject_path, "rb") as f:
+                        data = tomli.load(f)
+                        return data["project"]["version"]
+        except (ImportError, KeyError, FileNotFoundError):
+            pass
+
+    # Final fallback if all else fails
+    return "unknown"
+
+
 # 当前应用版本
-CURRENT_VERSION = "0.1.4"
+CURRENT_VERSION = get_version()
 
 
 class AboutScreen(ModalScreen):

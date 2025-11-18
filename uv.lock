@@ -486,13 +486,14 @@ wheels = [
 
 [[package]]
 name = "goose"
-version = "0.1.4"
+version = "0.2.0"
 source = { virtual = "." }
 dependencies = [
     { name = "aiohttp" },
     { name = "brotli" },
     { name = "customtkinter" },
     { name = "httpx" },
+    { name = "importlib" },
     { name = "linkify-it-py" },
     { name = "mdit-py-plugins" },
     { name = "pip-autoremove" },
@@ -513,6 +514,7 @@ requires-dist = [
     { name = "brotli", specifier = "==1.1.0" },
     { name = "customtkinter", specifier = "==5.2.2" },
     { name = "httpx", specifier = "==0.28.1" },
+    { name = "importlib", specifier = ">=1.0.4" },
     { name = "linkify-it-py", specifier = "==2.0.3" },
     { name = "mdit-py-plugins", specifier = "==0.4.2" },
     { name = "pip-autoremove", specifier = "==0.10.0" },
@@ -572,6 +574,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/f1/70/7703c29685631f5a7
 wheels = [
     { url = "https://files.pythonhosted.org/packages/76/c6/c88e154df9c4e1a2a66ccf0005a88dfb2650c1dffb6f5ce603dfbd452ce3/idna-3.10-py3-none-any.whl", hash = "sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3", size = 70442, upload-time = "2024-09-15T18:07:37.964Z" },
 ]
+
+[[package]]
+name = "importlib"
+version = "1.0.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/31/77/3781f65cafe55480b56914def99022a5d2965a4bb269655c89ef2f1de3cd/importlib-1.0.4.zip", hash = "sha256:b6ee7066fea66e35f8d0acee24d98006de1a0a8a94a8ce6efe73a9a23c8d9826", size = 7074, upload-time = "2016-08-31T19:40:00.728Z" }
 
 [[package]]
 name = "iniconfig"

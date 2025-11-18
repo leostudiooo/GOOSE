@@ -1,12 +1,14 @@
 [project]
 name = "goose"
-version = "0.1.4"
+version = "0.2.0"
+license = "GPL-3.0-or-later"
 requires-python = ">=3.9"
 dependencies = [
     "aiohttp>=3.13.2",
     "Brotli==1.1.0",
     "customtkinter==5.2.2",
     "httpx==0.28.1",
+    "importlib>=1.0.4",
     "linkify-it-py==2.0.3",
     "mdit-py-plugins==0.4.2",
     "pip-autoremove==0.10.0",
