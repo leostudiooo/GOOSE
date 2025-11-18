@@ -15,11 +15,13 @@ def get_version() -> str:
     try:
         # Best practice: Try to get from installed package metadata first
         from importlib.metadata import version
+
         return version("goose")
     except (ImportError, Exception):
         # Fallback: Read from pyproject.toml when running from source
         try:
             import tomli
+
             # Find project root by looking for pyproject.toml
             current_file = Path(__file__).resolve()
             for parent in current_file.parents:
