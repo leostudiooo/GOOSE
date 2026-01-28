@@ -13,7 +13,7 @@
 
 </div>
 
-**Python 版本停止维护。请前往 [Web App 版本](https:/github.com/leostudiooo/goose-webapp)。**
+**Python 版本停止维护。请前往 [Web App 版本](https://github.com/leostudiooo/GOOSE-WebApp)。**
 
 ## 🪿 关于
 
